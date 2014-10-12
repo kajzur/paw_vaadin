@@ -1,0 +1,17 @@
+@import "addons.scss";
+@import "trelloplus.scss";
+
+/* This file prefixes all rules with the theme name to avoid causing conflicts with other themes. */
+/* The actual styles should be defined in trelloplus.scss */
+.trelloplus {
+  @include addons;
+  @include trelloplus;
+}
+body{
+	height:100%;
+}
+.bordered-grid{
+	border: 1px solid !important;
+	height:500px !important;
+	width:100% !important;
+}
