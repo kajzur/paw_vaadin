@@ -2,9 +2,9 @@ package com.example.trelloplus;
 
 import java.io.Serializable;
 import java.sql.SQLException;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
@@ -14,6 +14,7 @@ import com.vaadin.ui.GridLayout;
 public class Service implements Serializable{
 	private JDBCConnectionPool connectionPool = null;
 	SQLContainer tasksContainer;
+	SQLContainer usersContainer;
 
 	public Service() {
 		initConnectionPool();
@@ -24,7 +25,7 @@ public class Service implements Serializable{
 		try {
 			connectionPool = new SimpleJDBCConnectionPool(
 					"com.mysql.jdbc.Driver",
-					"jdbc:mysql://localhost/trello_plus", "root", "");
+					"jdbc:mysql://localhost/trello_plus?useUnicode=true&characterEncoding=UTF-8", "root", "");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -35,6 +36,9 @@ public class Service implements Serializable{
 			TableQuery q1 = new TableQuery("tasks", connectionPool);
 			q1.setVersionColumn("VERSION");
 			tasksContainer = new SQLContainer(q1);
+			TableQuery q2 = new TableQuery("users", connectionPool);
+			q2.setVersionColumn("VERSION");
+			usersContainer = new SQLContainer(q2);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -59,7 +63,32 @@ public class Service implements Serializable{
 		    Property desc = item.getItemProperty("description");
 		    Task t = new Task((String)name.getValue(), (String)desc.getValue());
 		    gl.addComponent(t);
-		    // do stuff with item
+		   
 		}
 	}
+	
+	public boolean checkUserCredentials(String user, String password){
+		
+		password = getHashedPassword(password);
+		
+		usersContainer.addContainerFilter(new Compare.Equal("login", user));
+		
+	
+		Object id = usersContainer.getIdByIndex(0);
+		Item item = usersContainer.getItem(id);
+		Property passwordFromDB = item.getItemProperty("password");
+		
+		if(password.equals(passwordFromDB.getValue()))
+			return true;
+		else
+			return false;
+		
+	}
+	
+	private String getHashedPassword(String password)
+	{
+		return password;
+	}
+
+	
 }

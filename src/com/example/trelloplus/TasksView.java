@@ -2,44 +2,56 @@ package com.example.trelloplus;
 
 import java.sql.SQLException;
 
+import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
-@SuppressWarnings("serial")
-@Theme("trelloplus")
-
-public class TrelloplusUI extends UI implements View{
-
-
+@Theme("trelloplus.scss")
+public class TasksView extends VerticalLayout implements View {
+	
 	public static final String NAME = "main";
 	public Window win;
 	public VerticalLayout mainlayout;
 	public VerticalLayout subWindowLayout;
 	public GridLayout tableGridLayout;
 	public Service service;
+	public Label text;
+
 	
-	@Override
-	protected void init(VaadinRequest request) {
+	public TasksView()
+	{
 		
 		service = new Service();
-		VaadinService vs = request.getService();
 		
-		mainlayout = new VerticalLayout();
-		mainlayout.setMargin(true);
-        mainlayout.setSpacing(true);
+		
+		text = new Label();
+
+		 Button logout = new Button("Logout", new Button.ClickListener() {
+
+		        
+				@Override
+				public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
+				
+		            getSession().setAttribute("user", null);
+		            getUI().getNavigator().navigateTo(NAME);
+					
+				}
+		    });
         
 		win = new Window("Dodawanie zadania");
 		win.setModal(true);
@@ -89,7 +101,6 @@ public class TrelloplusUI extends UI implements View{
 		subWindowLayout.addComponent(descriptionArea);
 		subWindowLayout.addComponent(buttonGroupLayout);
 		
-		setContent(mainlayout);
 		
 		tableGridLayout = new GridLayout(4, 2);
 		service.fillTable(tableGridLayout);
@@ -97,21 +108,25 @@ public class TrelloplusUI extends UI implements View{
 		button.addClickListener(new Button.ClickListener() {
 			public void buttonClick(ClickEvent event) {				
 		        win.center();
-		        addWindow(win);
+		        getUI().addWindow(win);
 			}
 		}); 
 		tableGridLayout.setStyleName("bordered-grid");
 
-		mainlayout.addComponent(button);	
-		mainlayout.addComponent(tableGridLayout);
+		this.addComponent(text);
+		this.addComponent(button);
+		this.addComponent(logout);
+		this.addComponent(tableGridLayout);
 		win.setContent(subWindowLayout);
-
 	}
+	
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-		// TODO Auto-generated method stub
 		
+        String username = String.valueOf(getSession().getAttribute("user"));
+        text.setValue("Hello " + username);
 	}
 
 }
