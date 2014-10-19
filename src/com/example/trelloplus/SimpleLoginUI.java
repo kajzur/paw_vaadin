@@ -1,10 +1,11 @@
 package com.example.trelloplus;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
-
+@Theme("trelloplus")
 public class SimpleLoginUI extends UI {
 
     @Override
@@ -19,7 +20,7 @@ public class SimpleLoginUI extends UI {
         //
         // The initial log view where the user can login to the application
         //
-        getNavigator().addView(SimpleLoginView.NAME, SimpleLoginView.class);//
+        getNavigator().addView("", SimpleLoginView.class);//
 
        
         getNavigator().addView(Main.NAME,
@@ -41,7 +42,8 @@ public class SimpleLoginUI extends UI {
                 if (!isLoggedIn && !isLoginView) {
                     // Redirect to login view always if a user has not yet
                     // logged in
-                    getNavigator().navigateTo(SimpleLoginView.NAME);
+                	
+                    getNavigator().navigateTo("");
                     return false;
 
                 } else if (isLoggedIn && isLoginView) {
