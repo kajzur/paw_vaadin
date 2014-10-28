@@ -1,21 +1,16 @@
 package com.example.trelloplus;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -59,6 +54,8 @@ public class TasksView extends VerticalLayout implements View {
 		subWindowLayout = new VerticalLayout();
 		subWindowLayout.setMargin(true);
 		subWindowLayout.setSpacing(true);
+		
+		
 
 		final TextField title = new TextField();
 		title.setSizeFull();
@@ -153,7 +150,9 @@ public class TasksView extends VerticalLayout implements View {
 
 		tableLayout = new HorizontalLayout();
 		// service.fillTable(tableGridLayout);
-		service.fillTableList(tableLayout);
+		
+		tableLayout.setSpacing(true);
+		
 
 		Button addNewTaskBtn = new Button("Dodaj zadanie");
 		addNewTaskBtn.addClickListener(new Button.ClickListener() {
@@ -162,6 +161,43 @@ public class TasksView extends VerticalLayout implements View {
 				getUI().addWindow(win);
 			}
 		});
+		
+		ArrayList<List> allLists = service.fillTableList();
+		
+		for (List b : allLists) {
+			// b.setWidth(widthPerList + "%");
+
+			
+			 // b.setWidth("30%"); b.setw
+			 
+
+			Button addNewListBtn = new Button("Dodaj zadanie");
+			addNewListBtn.addClickListener(new Button.ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					win.center();
+					getUI().addWindow(win);
+
+				}
+			});
+			
+			//gridLayout.addComponent(b);
+			
+			VerticalLayout buttonMainGroupLayout = new VerticalLayout();
+			buttonMainGroupLayout.setStyleName("list");
+			buttonMainGroupLayout.setSizeFull();
+			buttonMainGroupLayout.setSpacing(true);
+			
+			buttonMainGroupLayout.addComponent(b);
+			buttonMainGroupLayout.addComponent(addNewListBtn);
+			tableLayout.setStyleName("list");
+			tableLayout.addComponent(buttonMainGroupLayout);
+			//gridLayout.setExpandRatio(b, 1f);
+			
+			tableLayout.setExpandRatio(buttonMainGroupLayout, 1f);
+			
+		}
 
 		Button addNewListBtn = new Button("Dodaj nowa liste");
 		addNewListBtn.addClickListener(new Button.ClickListener() {

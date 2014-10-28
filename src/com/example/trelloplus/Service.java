@@ -11,8 +11,14 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
@@ -59,6 +65,7 @@ public class Service implements Serializable {
 
 		Object rowId = tasksContainer.addItem();
 		Item rowItem = tasksContainer.getItem(rowId);
+		rowItem.getItemProperty("id_list").setValue(1);
 		rowItem.getItemProperty("name").setValue(title);
 		rowItem.getItemProperty("description").setValue(description);
 
@@ -66,12 +73,15 @@ public class Service implements Serializable {
 
 	}
 
-	public void addList(int id, String title) throws UnsupportedOperationException,
-			SQLException {
+	public void addList(int id, String title)
+			throws UnsupportedOperationException, SQLException {
 		Object rowId = listsContainer.addItem();
 		Item rowItem = listsContainer.getItem(rowId);
 		rowItem.getItemProperty("id_board").setValue(id);
 		rowItem.getItemProperty("name").setValue(title);
+		
+		//rowItem.getItemProperty("name").setValue(listsContainer.getItemIds() + "");
+		
 
 		listsContainer.commit();
 	}
@@ -88,13 +98,12 @@ public class Service implements Serializable {
 
 		}
 	}
-	
-	public void cleanTableList()
-	{
-		
+
+	public void cleanTableList() {
+
 	}
 
-	public void fillTableList(HorizontalLayout gridLayout) {
+	public ArrayList<List> fillTableList() {
 		ArrayList<List> lists = new ArrayList<List>();
 		for (int i = 0; i < listsContainer.size(); i++) {
 			Object id = listsContainer.getIdByIndex(i);
@@ -104,21 +113,46 @@ public class Service implements Serializable {
 			// gridLayout.addComponent(board);
 			lists.add(list);
 		}
-		int widthPerList;
-		
-		if (lists.size() < 1) {
-			widthPerList = 100 / 1;// lists.size();
-		}
 
-		else {
-			widthPerList = 100 / lists.size();
-		}
-		
-		for (List b : lists) {
-			b.setWidth(widthPerList + "%");
-			gridLayout.addComponent(b);
-			gridLayout.setExpandRatio(b, 1f);
-		}
+		return lists;
+		/*
+		 * int widthPerList;
+		 * 
+		 * if (lists.size() < 1) { widthPerList = 100 / 1;// lists.size(); }
+		 * 
+		 * else { widthPerList = 100 / lists.size(); }
+		 * 
+		 * for (List b : lists) { // b.setWidth(widthPerList + "%");
+		 * 
+		 * 
+		 * // b.setWidth("30%"); b.setw
+		 * 
+		 * 
+		 * Button addNewListBtn = new Button("Dodaj zadanie");
+		 * addNewListBtn.addClickListener(new Button.ClickListener() {
+		 * 
+		 * @Override public void buttonClick(ClickEvent event) {
+		 * createNewListWin.center(); getUI().addWindow(createNewListWin);
+		 * 
+		 * } });
+		 * 
+		 * //gridLayout.addComponent(b);
+		 * 
+		 * VerticalLayout buttonMainGroupLayout = new VerticalLayout();
+		 * buttonMainGroupLayout.setStyleName("list");
+		 * buttonMainGroupLayout.setSizeFull();
+		 * buttonMainGroupLayout.setSpacing(true);
+		 * 
+		 * buttonMainGroupLayout.addComponent(b);
+		 * buttonMainGroupLayout.addComponent(addNewListBtn);
+		 * gridLayout.setStyleName("list");
+		 * gridLayout.addComponent(buttonMainGroupLayout);
+		 * //gridLayout.setExpandRatio(b, 1f);
+		 * 
+		 * gridLayout.setExpandRatio(buttonMainGroupLayout, 1f);
+		 * 
+		 * }
+		 */
 	}
 
 	public boolean checkUserCredentials(String user, String password) {
