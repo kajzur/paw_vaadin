@@ -7,8 +7,12 @@ import com.vaadin.ui.VerticalLayout;
 
 public class List extends CustomComponent {
 
+	private String id_list;
+	private String id_board;
+	private String name;
+
 	public List(String title) {
-		//this.setStyleName("list");
+		// this.setStyleName("list");
 
 		HorizontalLayout l1 = new HorizontalLayout();
 		l1.addComponent(new Label(title));
@@ -19,6 +23,30 @@ public class List extends CustomComponent {
 
 		setCompositionRoot(vt);
 
+	}
+
+	public String getId_board() {
+		return id_board;
+	}
+
+	public void setId_board(String id_board) {
+		this.id_board = id_board;
+	}
+
+	public String getId_list() {
+		return id_list;
+	}
+
+	public void setId_list(String id_list) {
+		this.id_list = id_list;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

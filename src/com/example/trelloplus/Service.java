@@ -11,14 +11,7 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
@@ -60,12 +53,12 @@ public class Service implements Serializable {
 		}
 	}
 
-	public void addTask(String title, String description)
+	public void addTask(String id, String title, String description)
 			throws UnsupportedOperationException, SQLException {
 
 		Object rowId = tasksContainer.addItem();
 		Item rowItem = tasksContainer.getItem(rowId);
-		rowItem.getItemProperty("id_list").setValue(1);
+		rowItem.getItemProperty("id_list").setValue(Integer.parseInt(id)- 1);
 		rowItem.getItemProperty("name").setValue(title);
 		rowItem.getItemProperty("description").setValue(description);
 
@@ -79,24 +72,38 @@ public class Service implements Serializable {
 		Item rowItem = listsContainer.getItem(rowId);
 		rowItem.getItemProperty("id_board").setValue(id);
 		rowItem.getItemProperty("name").setValue(title);
-		
-		//rowItem.getItemProperty("name").setValue(listsContainer.getItemIds() + "");
-		
+
+		// rowItem.getItemProperty("name").setValue(listsContainer.getItemIds()
+		// + "");
 
 		listsContainer.commit();
 	}
 
-	public void fillTable(GridLayout gl) {
+	public ArrayList<Task> fillTable(/* GridLayout gl */) {
+
+		ArrayList<Task> listAllTasks = new ArrayList<>();
+
 		for (int i = 0; i < tasksContainer.size(); i++) {
+
 			Object id = tasksContainer.getIdByIndex(i);
 			Item item = tasksContainer.getItem(id);
+			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
+			
 			Task t = new Task((String) name.getValue(),
 					(String) desc.getValue());
-			gl.addComponent(t);
-
+			
+			t.setId_list(id_list.getValue() + "");
+			t.setTitle(name.getValue() + "");
+			t.setDesc(desc.getValue() + "");
+			
+			// gl.addComponent(t);
+			listAllTasks.add(t);
 		}
+
+		return listAllTasks;
+
 	}
 
 	public void cleanTableList() {
@@ -108,8 +115,15 @@ public class Service implements Serializable {
 		for (int i = 0; i < listsContainer.size(); i++) {
 			Object id = listsContainer.getIdByIndex(i);
 			Item item = listsContainer.getItem(id);
+			Property id_list = item.getItemProperty("id_list");
+			Property id_board = item.getItemProperty("id_board");
 			Property name = item.getItemProperty("name");
 			List list = new List((String) name.getValue());
+			
+			list.setId_list(id_list.getValue() + "");
+			list.setId_board(id_board.getValue() + "");
+			list.setName(name.getValue() + "");
+			
 			// gridLayout.addComponent(board);
 			lists.add(list);
 		}
@@ -175,6 +189,19 @@ public class Service implements Serializable {
 			return false;
 
 	}
+	
+	/*public String CompareTasksToList(String id_l)
+	{
+		tasksContainer.addContainerFilter(new Compare.Equal("id_list", id_l));
+		
+		Object id_list = tasksContainer.getIdByIndex(1);
+		Item item = tasksContainer.getItem(id_list);
+		
+		Property p_name = item.getItemProperty("name");
+//		Property p_descritpion = item.getItemProperty("description");
+		
+		return p_name.getValue() + "";
+	}*/
 
 	private String getHashedPassword(String password) {
 		return password;
