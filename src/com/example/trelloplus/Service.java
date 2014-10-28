@@ -2,6 +2,8 @@ package com.example.trelloplus;
 
 import java.io.Serializable;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.Compare;
@@ -10,11 +12,13 @@ import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
 
-public class Service implements Serializable{
+public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
 	SQLContainer tasksContainer;
 	SQLContainer usersContainer;
+	SQLContainer listsContainer;
 
 	public Service() {
 		initConnectionPool();
@@ -25,7 +29,8 @@ public class Service implements Serializable{
 		try {
 			connectionPool = new SimpleJDBCConnectionPool(
 					"com.mysql.jdbc.Driver",
-					"jdbc:mysql://localhost/trello_plus?useUnicode=true&characterEncoding=UTF-8", "root", "");
+					"jdbc:mysql://localhost/trello_plus?useUnicode=true&characterEncoding=UTF-8",
+					"root", "");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -40,12 +45,17 @@ public class Service implements Serializable{
 			q2.setVersionColumn("VERSION");
 			usersContainer = new SQLContainer(q2);
 
+			TableQuery q3 = new TableQuery("lists", connectionPool);
+			q3.setVersionColumn("VERSION");
+			listsContainer = new SQLContainer(q3);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void addTask(String title, String description) throws UnsupportedOperationException, SQLException {
+	public void addTask(String title, String description)
+			throws UnsupportedOperationException, SQLException {
 
 		Object rowId = tasksContainer.addItem();
 		Item rowItem = tasksContainer.getItem(rowId);
@@ -55,40 +65,85 @@ public class Service implements Serializable{
 		tasksContainer.commit();
 
 	}
-	public void fillTable(GridLayout gl){
+
+	public void addList(int id, String title) throws UnsupportedOperationException,
+			SQLException {
+		Object rowId = listsContainer.addItem();
+		Item rowItem = listsContainer.getItem(rowId);
+		rowItem.getItemProperty("id_board").setValue(id);
+		rowItem.getItemProperty("name").setValue(title);
+
+		listsContainer.commit();
+	}
+
+	public void fillTable(GridLayout gl) {
 		for (int i = 0; i < tasksContainer.size(); i++) {
-		    Object id = tasksContainer.getIdByIndex(i);
-		    Item item = tasksContainer.getItem(id);
-		    Property name = item.getItemProperty("name");
-		    Property desc = item.getItemProperty("description");
-		    Task t = new Task((String)name.getValue(), (String)desc.getValue());
-		    gl.addComponent(t);
-		   
+			Object id = tasksContainer.getIdByIndex(i);
+			Item item = tasksContainer.getItem(id);
+			Property name = item.getItemProperty("name");
+			Property desc = item.getItemProperty("description");
+			Task t = new Task((String) name.getValue(),
+					(String) desc.getValue());
+			gl.addComponent(t);
+
 		}
 	}
 	
-	public boolean checkUserCredentials(String user, String password){
+	public void cleanTableList()
+	{
 		
+	}
+
+	public void fillTableList(HorizontalLayout gridLayout) {
+		ArrayList<List> lists = new ArrayList<List>();
+		for (int i = 0; i < listsContainer.size(); i++) {
+			Object id = listsContainer.getIdByIndex(i);
+			Item item = listsContainer.getItem(id);
+			Property name = item.getItemProperty("name");
+			List list = new List((String) name.getValue());
+			// gridLayout.addComponent(board);
+			lists.add(list);
+		}
+		int widthPerList;
+		
+		if (lists.size() < 1) {
+			widthPerList = 100 / 1;// lists.size();
+		}
+
+		else {
+			widthPerList = 100 / lists.size();
+		}
+		
+		for (List b : lists) {
+			b.setWidth(widthPerList + "%");
+			gridLayout.addComponent(b);
+			gridLayout.setExpandRatio(b, 1f);
+		}
+	}
+
+	public boolean checkUserCredentials(String user, String password) {
+
 		password = getHashedPassword(password);
-		
+
 		usersContainer.addContainerFilter(new Compare.Equal("login", user));
-		
-	
+
+		// if(usersContainer.size()==0){
+		// return false;
+		// }
+
 		Object id = usersContainer.getIdByIndex(0);
 		Item item = usersContainer.getItem(id);
 		Property passwordFromDB = item.getItemProperty("password");
-		
-		if(password.equals(passwordFromDB.getValue()))
+
+		if (password.equals(passwordFromDB.getValue()))
 			return true;
 		else
 			return false;
-		
+
 	}
-	
-	private String getHashedPassword(String password)
-	{
+
+	private String getHashedPassword(String password) {
 		return password;
 	}
 
-	
 }
