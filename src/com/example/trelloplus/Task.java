@@ -22,7 +22,7 @@ public class Task extends CustomComponent  {
 		
 		vt.addComponent(l1);
 		vt.addComponent(l2);
-		//vt.addComponent(l3);//
+		//vt.addComponent(l3);////
 		
 		setCompositionRoot(vt);
 		
