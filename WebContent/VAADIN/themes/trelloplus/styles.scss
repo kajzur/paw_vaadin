@@ -11,15 +11,34 @@ body{
 	height:100%;
 }
 .bordered-grid{
-	border: 1px solid !important;
-	height:500px !important;
-	width:100% !important;
+	height:70% !important;
+	width: auto !important;
 }
 .task{
 	width: 200px !important;
 	height: 100px !important;
 	background-color:yellow;
 	border: 1px solid !important;
+}
+.board{
+	width: 100% !important;
+	height: 100% !important;
+	background-color:yellow;
 	
+}
+
+.list{
+	width: 100% !important;
+	height: 100% !important;
+	background-color:yellow;
 	
+}
+
+.list-header{
+	border-bottom: 1px solid !important;
+}
+
+.v-slot-bordered-grid{
+	height:500px;
+	overflow-x: scroll;
 }
