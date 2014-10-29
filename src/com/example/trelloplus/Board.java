@@ -9,7 +9,6 @@ public class Board extends CustomComponent{
 
 	public Board(String title)
 	{
-		//this.setStyleName("task");
 		this.setStyleName("board");
 		
 		HorizontalLayout l1 = new HorizontalLayout();

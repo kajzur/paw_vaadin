@@ -19,16 +19,10 @@ public class Task extends CustomComponent {
 		HorizontalLayout l2 = new HorizontalLayout();
 		l2.addComponent(new Label(desc));
 
-		/*
-		 * HorizontalLayout l3 = new HorizontalLayout(); l3.addComponent(new
-		 * Label(desc));
-		 */
-
 		VerticalLayout vt = new VerticalLayout();
 
 		vt.addComponent(l1);
 		vt.addComponent(l2);
-		// vt.addComponent(l3);////
 
 		setCompositionRoot(vt);
 
