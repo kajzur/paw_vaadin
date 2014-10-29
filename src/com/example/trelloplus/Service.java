@@ -1,16 +1,25 @@
 package com.example.trelloplus;
 
 import java.io.Serializable;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
+import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
@@ -64,6 +73,17 @@ public class Service implements Serializable {
 
 		tasksContainer.commit();
 	}
+	
+	public void addUser(String name, String password) throws UnsupportedOperationException, SQLException, ReadOnlyException, NoSuchAlgorithmException {
+
+		Object rowId = usersContainer.addItem();
+		Item rowItem = usersContainer.getItem(rowId);
+		rowItem.getItemProperty("login").setValue(name);
+		rowItem.getItemProperty("password").setValue(getHashedPassword(password));
+
+		usersContainer.commit();
+
+	}
 
 	public void addList(int id, String title)
 			throws UnsupportedOperationException, SQLException {
@@ -80,13 +100,10 @@ public class Service implements Serializable {
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
 		for (int i = 0; i < tasksContainer.size(); i++) {
-
 			Object id = tasksContainer.getIdByIndex(i);
 			Item item = tasksContainer.getItem(id);
-			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
-
 			Task t = new Task((String) name.getValue(),
 					(String) desc.getValue());
 
@@ -97,8 +114,6 @@ public class Service implements Serializable {
 			listAllTasks.add(t);
 		}
 
-		return listAllTasks;
-
 	}
 
 	public ArrayList<List> fillTableList(boolean refresh) {
@@ -108,8 +123,6 @@ public class Service implements Serializable {
 		for (int i = 0; i < listsContainer.size(); i++) {
 			Object id = listsContainer.getIdByIndex(i);
 			Item item = listsContainer.getItem(id);
-			Property id_list = item.getItemProperty("id_list");
-			Property id_board = item.getItemProperty("id_board");
 			Property name = item.getItemProperty("name");
 			List list = new List((String) name.getValue());
 
@@ -122,25 +135,47 @@ public class Service implements Serializable {
 		listCache.addAll(lists);
 		return lists;
 	}
+	
 
 	public boolean checkUserCredentials(String user, String password) {
 
-		password = getHashedPassword(password);
+		try {
+			password = getHashedPassword(password);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 
 		usersContainer.addContainerFilter(new Compare.Equal("login", user));
 
+		if(!(usersContainer.size()>0))
+			return false;
+		
 		Object id = usersContainer.getIdByIndex(0);
 		Item item = usersContainer.getItem(id);
 		Property passwordFromDB = item.getItemProperty("password");
-
+		
 		if (password.equals(passwordFromDB.getValue()))
 			return true;
 		else
 			return false;
 	}
 
-	private String getHashedPassword(String password) {
-		return password;
+
+	private String getHashedPassword(String password) throws NoSuchAlgorithmException {
+		
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+        md.update(password.getBytes());
+
+        byte byteData[] = md.digest();
+
+        //convert the byte to hex format method 1
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < byteData.length; i++) {
+            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+        }
+
+         
+        return sb.toString();
 	}
 
 }

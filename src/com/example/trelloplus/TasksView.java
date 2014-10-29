@@ -21,28 +21,19 @@ public class TasksView extends VerticalLayout implements View {
 	public static String currentList = "";
 	public static final String NAME = "main";
 	public Window win;
-	public Window createNewBoardWin;
 	public Window createNewListWin;
 	public VerticalLayout mainlayout;
 	public VerticalLayout subWindowLayout;
 	public VerticalLayout subCreateNewListLayout;
-	public VerticalLayout subBoardWindow;
 	public HorizontalLayout tableLayout;
 	public Service service;
-	public Label text;
-	Task t;
-	VerticalLayout listGroupLayout;
-	ArrayList<List> allLists;
 
 	public TasksView() {
 
-		t = new Task("tytul", "opis");
-
 		service = new Service();
 
-		text = new Label();
 
-		Button logout = new Button("Logout", new Button.ClickListener() {
+		Button logout = new Button("Wyloguj", new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
@@ -70,7 +61,7 @@ public class TasksView extends VerticalLayout implements View {
 		descriptionArea.setInputPrompt("Podaj opis");
 		descriptionArea.setSizeFull();
 
-		Button save = new Button("Save");
+		Button save = new Button("Zapisz");
 		save.setSizeFull();
 		save.addClickListener(new Button.ClickListener() {
 
@@ -84,7 +75,7 @@ public class TasksView extends VerticalLayout implements View {
 					Notification.show(e.getMessage());
 				}
 				win.close();
-				t = new Task(title.getValue(), descriptionArea.getValue());
+				//t = new Task(title.getValue(), descriptionArea.getValue());
 
 				Notification.show("Dodano");
 				ArrayList<List> listsFromCache = service.fillTableList(false);
@@ -99,7 +90,7 @@ public class TasksView extends VerticalLayout implements View {
 			}
 		});
 
-		Button cancel = new Button("Cancel");
+		Button cancel = new Button("Anuluj");
 		cancel.setSizeFull();
 		cancel.addClickListener(new Button.ClickListener() {
 
@@ -292,6 +283,6 @@ public class TasksView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 
 		String username = String.valueOf(getSession().getAttribute("user"));
-		text.setValue("Hello " + username);
+		
 	}
 }

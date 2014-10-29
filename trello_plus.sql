@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.12
+-- version 4.0.4.1
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 28 Paź 2014, 13:29
--- Server version: 5.5.36
--- PHP Version: 5.4.27
+-- Czas wygenerowania: 29 Paź 2014, 13:26
+-- Wersja serwera: 5.5.32
+-- Wersja PHP: 5.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,8 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `trello_plus`
+-- Baza danych: `trello_plus`
 --
+CREATE DATABASE IF NOT EXISTS `trello_plus` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `trello_plus`;
 
 -- --------------------------------------------------------
 
@@ -69,7 +71,7 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `id_board` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=13 ;
 
 --
 -- Zrzut danych tabeli `lists`
@@ -77,9 +79,11 @@ CREATE TABLE IF NOT EXISTS `lists` (
 
 INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
 (1, 1, 'lista1'),
-(2, 1, 'lista1'),
-(9, 1, '[1, 2, Temporary row id]'),
-(10, 1, '[1, 2, 9, Temporary row id]');
+(2, 1, 'lista 2'),
+(9, 1, 'lista testowa'),
+(10, 1, 'lista nr 4'),
+(11, 1, 'nowa lista'),
+(12, 1, 'kolejna lista');
 
 -- --------------------------------------------------------
 
@@ -93,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `name` text COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=18 ;
 
 --
 -- Zrzut danych tabeli `tasks`
@@ -112,7 +116,11 @@ INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`) VALUES
 (10, 0, 'title 1', 'zadanie 1'),
 (11, 0, 'zadanie na liscie', 'super'),
 (12, 1, 'zadanko', 'qwefasdf'),
-(13, 1, 'zadanko testowe', 'sdasdgdsfg');
+(13, 1, 'zadanko testowe', 'sdasdgdsfg'),
+(14, 1, 'task', 'test dodawania taska ;)'),
+(15, 1, 'task', 'test dodawania taska ;)'),
+(16, 1, 'dfada', 'ddddd'),
+(17, 1, 'zadanie', 'jakieś sobie nowe zadanie dodane do listy1');
 
 -- --------------------------------------------------------
 
@@ -123,16 +131,21 @@ INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`) VALUES
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
-  `password` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `password` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=2 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=17 ;
 
 --
 -- Zrzut danych tabeli `users`
 --
 
 INSERT INTO `users` (`id`, `login`, `password`) VALUES
-(1, 'test@gmail.com', '123456789');
+(11, 'test@test.com', '8f0e2f76e22b43e2855189877e7dc1e1e7d98c226c95db247cd1d547928334a9'),
+(12, 'mateusz@gmail.co', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
+(13, 'adam@gmail.com', '15e2b0d3c33891ebb0f1ef609ec419420c20e320ce94c65fbc8c3312448eb225'),
+(14, 'krzysiek@gmail.c', '8a9bcf1e51e812d0af8465a8dbcc9f741064bf0af3b3d08e6b0246437c19f7fb'),
+(15, 'natalia@gmail.co', '582823a83bad94cc9ed4ffb3f09623c9397df0725f16528ac1ffc97cbb8d7183'),
+(16, 'maciej@gmail.com', 'c60e6ab5dcab898050d3ba315bb0be83be0ce897d81ea2e8f08659b3c6738fc9');
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
