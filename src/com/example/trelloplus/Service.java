@@ -21,6 +21,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+//wersja Agi
 public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
 	SQLContainer tasksContainer;

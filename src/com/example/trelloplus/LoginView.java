@@ -24,6 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
+//wersja Agi
 public class LoginView extends CustomComponent implements View,
 		Button.ClickListener {
 
