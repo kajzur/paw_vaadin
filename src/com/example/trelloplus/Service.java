@@ -103,6 +103,7 @@ public class Service implements Serializable {
 		for (int i = 0; i < tasksContainer.size(); i++) {
 			Object id = tasksContainer.getIdByIndex(i);
 			Item item = tasksContainer.getItem(id);
+			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
 			Task t = new Task((String) name.getValue(),
@@ -114,6 +115,7 @@ public class Service implements Serializable {
 
 			listAllTasks.add(t);
 		}
+		return listAllTasks;
 
 	}
 
@@ -124,6 +126,8 @@ public class Service implements Serializable {
 		for (int i = 0; i < listsContainer.size(); i++) {
 			Object id = listsContainer.getIdByIndex(i);
 			Item item = listsContainer.getItem(id);
+			Property id_list = item.getItemProperty("id_list");
+			Property id_board = item.getItemProperty("id_board");
 			Property name = item.getItemProperty("name");
 			List list = new List((String) name.getValue());
 

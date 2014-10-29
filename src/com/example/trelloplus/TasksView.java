@@ -23,11 +23,16 @@ public class TasksView extends VerticalLayout implements View {
 	public static final String NAME = "main";
 	public Window win;
 	public Window createNewListWin;
+	public Window createNewBoardWin;
 	public VerticalLayout mainlayout;
 	public VerticalLayout subWindowLayout;
+	public VerticalLayout subBoardWindow;
 	public VerticalLayout subCreateNewListLayout;
 	public HorizontalLayout tableLayout;
 	public Service service;
+	public Task t;
+	public VerticalLayout listGroupLayout;
+	public ArrayList<List> allLists;
 
 	public TasksView() {
 
@@ -223,7 +228,6 @@ public class TasksView extends VerticalLayout implements View {
 		buttonMainGroupLayout.addComponent(addNewListBtn);
 		buttonMainGroupLayout.addComponent(logout);
 
-		this.addComponent(text);
 		this.addComponent(buttonMainGroupLayout);
 
 		this.addComponent(tableLayout);
