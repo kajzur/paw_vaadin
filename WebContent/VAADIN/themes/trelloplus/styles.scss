@@ -11,7 +11,7 @@ body{
 	height:100%;
 }
 .bordered-grid{
-	height:70% !important;
+	height: 100% !important;
 	width: auto !important;
 }
 .task{
@@ -39,6 +39,6 @@ body{
 }
 
 .v-slot-bordered-grid{
-	height:500px;
+	height: 100%;
 	overflow-x: scroll;
 }

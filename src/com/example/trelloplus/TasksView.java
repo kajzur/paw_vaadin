@@ -254,7 +254,6 @@ public class TasksView extends VerticalLayout implements View {
 				public void buttonClick(ClickEvent event) {
 					List currentList = (List) event.getButton().getParent();
 					TasksView.currentList = currentList.getId_list();
-					Notification.show(TasksView.currentList);
 					win.center();
 					getUI().addWindow(win);
 
@@ -266,8 +265,7 @@ public class TasksView extends VerticalLayout implements View {
 			list.setId_list(allLists.get(i).getId_list());
 			list.setSizeFull();
 			list.setSpacing(true);
-
-			// list.addComponent(allLists.get(i));
+			
 			list.addComponent(addNewListBtn);
 
 			for (int j = 0; j < listAllTasks.size(); j++) {
