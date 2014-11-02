@@ -7,6 +7,11 @@ import com.vaadin.ui.VerticalLayout;
 
 public class Board extends CustomComponent{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8769513290840624388L;
+
 	public Board(String title)
 	{
 		this.setStyleName("board");

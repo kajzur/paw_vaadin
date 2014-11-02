@@ -7,6 +7,10 @@ import com.vaadin.ui.VerticalLayout;
 
 public class Task extends CustomComponent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 7689196414848406296L;
 	private String id_list;
 	private String title;
 	private String desc;

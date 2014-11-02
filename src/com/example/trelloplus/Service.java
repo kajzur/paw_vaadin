@@ -14,13 +14,6 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.connection.JDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.connection.SimpleJDBCConnectionPool;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
-
 
 public class Service implements Serializable {
 	private JDBCConnectionPool connectionPool = null;
@@ -50,6 +43,7 @@ public class Service implements Serializable {
 			TableQuery q1 = new TableQuery("tasks", connectionPool);
 			q1.setVersionColumn("VERSION");
 			tasksContainer = new SQLContainer(q1);
+
 			TableQuery q2 = new TableQuery("users", connectionPool);
 			q2.setVersionColumn("VERSION");
 			usersContainer = new SQLContainer(q2);
@@ -74,13 +68,16 @@ public class Service implements Serializable {
 
 		tasksContainer.commit();
 	}
-	
-	public void addUser(String name, String password) throws UnsupportedOperationException, SQLException, ReadOnlyException, NoSuchAlgorithmException {
+
+	public void addUser(String name, String password)
+			throws UnsupportedOperationException, SQLException,
+			ReadOnlyException, NoSuchAlgorithmException {
 
 		Object rowId = usersContainer.addItem();
 		Item rowItem = usersContainer.getItem(rowId);
 		rowItem.getItemProperty("login").setValue(name);
-		rowItem.getItemProperty("password").setValue(getHashedPassword(password));
+		rowItem.getItemProperty("password").setValue(
+				getHashedPassword(password));
 
 		usersContainer.commit();
 
@@ -96,7 +93,7 @@ public class Service implements Serializable {
 		listsContainer.commit();
 	}
 
-	public ArrayList<Task> fillTable() {
+	public ArrayList<Task> getAllTask() {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
@@ -119,9 +116,10 @@ public class Service implements Serializable {
 
 	}
 
-	public ArrayList<List> fillTableList(boolean refresh) {
-		if(listCache.size()>0 && false)
+	public ArrayList<List> getAllList() {
+		if (listCache.size() > 0 && false)
 			return listCache;
+
 		ArrayList<List> lists = new ArrayList<List>();
 		for (int i = 0; i < listsContainer.size(); i++) {
 			Object id = listsContainer.getIdByIndex(i);
@@ -140,7 +138,6 @@ public class Service implements Serializable {
 		listCache.addAll(lists);
 		return lists;
 	}
-	
 
 	public boolean checkUserCredentials(String user, String password) {
 
@@ -152,35 +149,34 @@ public class Service implements Serializable {
 
 		usersContainer.addContainerFilter(new Compare.Equal("login", user));
 
-		if(!(usersContainer.size()>0))
+		if (!(usersContainer.size() > 0))
 			return false;
-		
+
 		Object id = usersContainer.getIdByIndex(0);
 		Item item = usersContainer.getItem(id);
 		Property passwordFromDB = item.getItemProperty("password");
-		
+
 		if (password.equals(passwordFromDB.getValue()))
 			return true;
 		else
 			return false;
 	}
 
+	private String getHashedPassword(String password)
+			throws NoSuchAlgorithmException {
 
-	private String getHashedPassword(String password) throws NoSuchAlgorithmException {
-		
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(password.getBytes());
+		md.update(password.getBytes());
 
-        byte byteData[] = md.digest();
+		byte byteData[] = md.digest();
 
-        //convert the byte to hex format method 1
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < byteData.length; i++) {
-            sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-        }
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < byteData.length; i++) {
+			sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16)
+					.substring(1));
+		}
 
-         
-        return sb.toString();
+		return sb.toString();
 	}
 
 }

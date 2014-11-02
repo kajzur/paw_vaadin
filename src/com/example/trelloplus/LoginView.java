@@ -2,13 +2,10 @@ package com.example.trelloplus;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.EmailValidator;
-import com.vaadin.event.MouseEvents.ClickEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.ui.MarginInfo;
@@ -18,15 +15,18 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.PasswordField;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.Reindeer;
 
-//wersja Agi
 public class LoginView extends CustomComponent implements View,
 		Button.ClickListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7620830730207589253L;
 
 	public static final String NAME = "login";
 
@@ -36,17 +36,21 @@ public class LoginView extends CustomComponent implements View,
 	private final Button loginButton;
 	private final Window win;
 	private final VerticalLayout subWindowLayout;
-	private Service service;
-	
+
+	private RegistrationService registrationService;
+	private AuthorizationService authorizationService;
 
 	public LoginView() {
 		setSizeFull();
-		service = new Service();
+
+		registrationService = new RegistrationService();
+		authorizationService = new AuthorizationService();
 
 		user = new TextField("U¿ytkownik:");
 		user.setWidth("300px");
 		user.setRequired(true);
-		user.addValidator(new EmailValidator("Nazwa u¿ytkownika musi byæ adresem e-mail"));
+		user.addValidator(new EmailValidator(
+				"Nazwa u¿ytkownika musi byæ adresem e-mail"));
 		user.setInvalidAllowed(false);
 
 		password = new PasswordField("Has³o:");
@@ -57,10 +61,10 @@ public class LoginView extends CustomComponent implements View,
 		password.setNullRepresentation("");
 
 		loginButton = new Button("Zaloguj", new Button.ClickListener() {
-			
+
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-				
+
 				if (!user.isValid() || !password.isValid()) {
 					return;
 				}
@@ -68,7 +72,8 @@ public class LoginView extends CustomComponent implements View,
 				String username = user.getValue();
 				String password1 = password.getValue();
 
-				boolean isValid = service.checkUserCredentials(username, password1);
+				boolean isValid = authorizationService.checkUserCredentials(
+						username, password1);
 
 				if (isValid) {
 
@@ -81,33 +86,33 @@ public class LoginView extends CustomComponent implements View,
 					password.focus();
 
 				}
-				
 			}
 		});
 		signinButton = new Button("Zarejestruj", new Button.ClickListener() {
-			
+
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				try {
 					win.center();
 					getUI().addWindow(win);
-					
+
 				} catch (UnsupportedOperationException e) {
 					e.printStackTrace();
-				} 
-				
+				}
+
 			}
 		});
-		
+
 		loginButton.setSizeFull();
 		signinButton.setSizeFull();
-		
+
 		HorizontalLayout loginButtonGroupLayout = new HorizontalLayout();
 		loginButtonGroupLayout.setSizeFull();
 		loginButtonGroupLayout.addComponent(loginButton);
 		loginButtonGroupLayout.addComponent(signinButton);
-		
-		VerticalLayout fields = new VerticalLayout(user, password, loginButtonGroupLayout);
+
+		VerticalLayout fields = new VerticalLayout(user, password,
+				loginButtonGroupLayout);
 		fields.setSpacing(true);
 		fields.setMargin(new MarginInfo(true, true, true, false));
 		fields.setSizeUndefined();
@@ -117,26 +122,22 @@ public class LoginView extends CustomComponent implements View,
 		viewLayout.setComponentAlignment(fields, Alignment.MIDDLE_CENTER);
 		viewLayout.setStyleName(Reindeer.LAYOUT_BLUE);
 		setCompositionRoot(viewLayout);
-		
-		
-		////////////////
+
 		subWindowLayout = new VerticalLayout();
 		subWindowLayout.setMargin(true);
 		subWindowLayout.setSpacing(true);
-		
+
 		win = new Window("Rejestracja");
 		win.setModal(true);
 		win.setContent(subWindowLayout);
-				
 
 		final TextField login = new TextField();
 		login.setInputPrompt("nazwa u¿ytkownika");
 		login.setSizeFull();
-		
+
 		final TextField password = new TextField();
 		password.setInputPrompt("has³o");
 		password.setSizeFull();
-		
 
 		Button save = new Button("Zapisz");
 		save.setSizeFull();
@@ -146,17 +147,18 @@ public class LoginView extends CustomComponent implements View,
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 
 				try {
-					service.addUser(login.getValue(), password.getValue());
+					registrationService.addUser(login.getValue(),
+							password.getValue());
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
 				} catch (UnsupportedOperationException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				} catch (ReadOnlyException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				} catch (NoSuchAlgorithmException e) {
-					// TODO Auto-generated catch block
+
 					e.printStackTrace();
 				}
 				win.close();
@@ -172,7 +174,7 @@ public class LoginView extends CustomComponent implements View,
 			@Override
 			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
 				win.close();
-				
+
 			}
 		});
 
@@ -216,8 +218,6 @@ public class LoginView extends CustomComponent implements View,
 
 	@Override
 	public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-		
-		
 
 	}
 }

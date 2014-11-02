@@ -5,6 +5,10 @@ import com.vaadin.ui.VerticalLayout;
 
 public class List extends VerticalLayout {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -854281813374146888L;
 	private String id_list;
 	private String id_board;
 	private String name;

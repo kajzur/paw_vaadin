@@ -5,43 +5,48 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.UI;
+
 @Theme("trelloplus")
 public class TrelloPlusUI extends UI {
 
-    @Override
-    protected void init(VaadinRequest request) {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4444221129590707715L;
 
-        new Navigator(this, this);
+	@Override
+	protected void init(VaadinRequest request) {
 
-        getNavigator().addView("", LoginView.class);
-        getNavigator().addView(TasksView.NAME, TasksView.class);
+		new Navigator(this, this);
 
-     
-        getNavigator().addViewChangeListener(new ViewChangeListener() {
+		getNavigator().addView("", LoginView.class);
+		getNavigator().addView(TasksView.NAME, TasksView.class);
 
-            @Override
-            public boolean beforeViewChange(ViewChangeEvent event) {
+		getNavigator().addViewChangeListener(new ViewChangeListener() {
 
-                boolean isLoggedIn = getSession().getAttribute("user") != null;
-                boolean isLoginView = event.getNewView() instanceof LoginView;
+			@Override
+			public boolean beforeViewChange(ViewChangeEvent event) {
 
-                if (!isLoggedIn && !isLoginView) {
-	
-                    getNavigator().navigateTo("");
-                    return false;
+				boolean isLoggedIn = getSession().getAttribute("user") != null;
+				boolean isLoginView = event.getNewView() instanceof LoginView;
 
-                } else if (isLoggedIn && isLoginView) {
-                
-                    return false;
-                }
+				if (!isLoggedIn && !isLoginView) {
 
-                return true;
-            }
+					getNavigator().navigateTo("");
+					return false;
 
-            @Override
-            public void afterViewChange(ViewChangeEvent event) {
+				} else if (isLoggedIn && isLoginView) {
 
-            }
-        });
-    }
+					return false;
+				}
+
+				return true;
+			}
+
+			@Override
+			public void afterViewChange(ViewChangeEvent event) {
+
+			}
+		});
+	}
 }
