@@ -78,6 +78,7 @@ public class LoginView extends CustomComponent implements View,
 				if (isValid) {
 
 					getSession().setAttribute("user", username);
+					getSession().setAttribute("id", authorizationService.getUserId(username));
 					getUI().getNavigator().navigateTo(TasksView.NAME);
 
 				} else {
@@ -187,7 +188,7 @@ public class LoginView extends CustomComponent implements View,
 		subWindowLayout.addComponent(password);
 		subWindowLayout.addComponent(buttonGroupLayout);
 	}
-
+	
 	@Override
 	public void enter(ViewChangeEvent event) {
 		user.focus();

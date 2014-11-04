@@ -18,7 +18,18 @@ public class AuthorizationService extends AbstractService {
 		super();
 
 	}
+	public String getUserId(String username){
+		usersContainer.addContainerFilter(new Compare.Equal("login", username));
+		if (!(usersContainer.size() > 0))
+			return null;
 
+		Object id = usersContainer.getIdByIndex(0);
+		Item item = usersContainer.getItem(id);
+		Property userId = item.getItemProperty("id");
+		return userId.getValue().toString();
+	}
+	
+	
 	public boolean checkUserCredentials(String user, String password) {
 
 		try {

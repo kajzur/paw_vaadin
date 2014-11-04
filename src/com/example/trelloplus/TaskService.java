@@ -12,7 +12,12 @@ public class TaskService extends AbstractService {
 
 	private SQLContainer tasksContainer;
 
-	public void addTask(String id, String title, String description)
+	
+	public TaskService() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public Task addTask(String id, String title, String description)
 			throws UnsupportedOperationException, SQLException {
 
 		Object rowId = tasksContainer.addItem();
@@ -22,6 +27,9 @@ public class TaskService extends AbstractService {
 		rowItem.getItemProperty("description").setValue(description);
 
 		tasksContainer.commit();
+		Task t = new Task(title, description);
+		t.setId_list(id);
+		return t;
 	}
 
 	public ArrayList<Task> getAllTask() {

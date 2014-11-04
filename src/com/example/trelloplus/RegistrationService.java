@@ -13,6 +13,11 @@ public class RegistrationService extends AbstractService {
 
 	private SQLContainer usersContainer;
 
+	public RegistrationService() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	public void addUser(String name, String password)
 			throws UnsupportedOperationException, SQLException,
 			ReadOnlyException, NoSuchAlgorithmException {

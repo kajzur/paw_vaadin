@@ -2,6 +2,8 @@ package com.example.trelloplus;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
@@ -23,13 +25,15 @@ public class TasksView extends VerticalLayout implements View {
 	private static final long serialVersionUID = -473387470476587223L;
 	public static String currentList = "";
 	public static final String NAME = "main";
-	public Window windowCreateTask;
 	public Window windowCreateList;
 	public Window windowCreateBoard;
 	public VerticalLayout subWindowForTask;
 	public VerticalLayout subWindowForBoard;
 	public VerticalLayout subWindowForList;
+	private BoardService boardService;
 	public HorizontalLayout mainLayout;
+	private final static Logger logger =
+	          Logger.getLogger(TasksView.class.getName());
 
 	public Task task;
 	public ArrayList<List> allLists;
@@ -38,7 +42,7 @@ public class TasksView extends VerticalLayout implements View {
 	public ListService listService;
 
 	public TasksView() {
-
+		boardService = new BoardService();
 		taskService = new TaskService();
 		listService = new ListService();
 
@@ -76,81 +80,35 @@ public class TasksView extends VerticalLayout implements View {
 		});
 
 		// Okienko do dodawania zadania
-		windowCreateTask = new Window("Dodawanie zadania");
-		windowCreateTask.setModal(true);
-		windowCreateTask.setContent(subWindowForTask);
 
-		subWindowForTask = new VerticalLayout();
-		subWindowForTask.setMargin(true);
-		subWindowForTask.setSpacing(true);
 
-		final TextField title = new TextField();
-		title.setInputPrompt("Podaj tytul");
-		title.setSizeFull();
 
-		final TextArea descriptionArea = new TextArea();
-		descriptionArea.setInputPrompt("Podaj opis");
-		descriptionArea.setSizeFull();
 
-		Button save = new Button("Zapisz");
-		save.setSizeFull();
-		save.addClickListener(new Button.ClickListener() {
+		final TextField titleBoard = new TextField();
+		titleBoard.setInputPrompt("Podaj tytul tablicy");
+		titleBoard.setSizeFull();
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				try {
-					taskService.addTask(TasksView.currentList,
-							title.getValue(), descriptionArea.getValue());
-				} catch (SQLException e) {
-					Notification.show(e.getMessage());
-				}
-				windowCreateTask.close();
-
-				Notification.show("Dodano");
-				ArrayList<List> listsFromCache = listService.getAllList();
-				for (List l : listsFromCache)
-					if (l.getId_list().equals(TasksView.currentList)) {
-						l.addComponent(task);
-					}
-
-				title.setValue("");
-				descriptionArea.setValue("");
-
-			}
-		});
-
-		Button cancel = new Button("Anuluj");
-		cancel.setSizeFull();
-		cancel.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				windowCreateTask.close();
-			}
-		});
-
+	
 		Button createBoardBtn = new Button("Utworz tablice");
 		createBoardBtn.setSizeFull();
 		createBoardBtn.addClickListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
+				try {
+					boardService.addNew(titleBoard.getValue(), getSession().getAttribute("id").toString());
+					Notification.show("Dodano..");
+				} catch (UnsupportedOperationException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				windowCreateBoard.close();
 
 			}
 		});
 
-		HorizontalLayout buttonGroupLayout = new HorizontalLayout();
-		buttonGroupLayout.setSizeFull();
-		buttonGroupLayout.addComponent(save);
-		buttonGroupLayout.addComponent(cancel);
 
-		subWindowForTask.addComponent(title);
-		subWindowForTask.addComponent(descriptionArea);
-		subWindowForTask.addComponent(buttonGroupLayout);
+
 
 		// Okienko do dodawania tablicy
 		windowCreateBoard = new Window("Dodawanie tablicy");
@@ -161,9 +119,6 @@ public class TasksView extends VerticalLayout implements View {
 		subWindowForBoard.setMargin(true);
 		subWindowForBoard.setSpacing(true);
 
-		final TextField titleBoard = new TextField();
-		titleBoard.setInputPrompt("Podaj tytul tablicy");
-		titleBoard.setSizeFull();
 
 		subWindowForBoard.addComponent(titleBoard);
 		subWindowForBoard.addComponent(createBoardBtn);
@@ -186,17 +141,16 @@ public class TasksView extends VerticalLayout implements View {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
-
+				List l = null;
 				try {
-					listService.addList(1, titleNewList.getValue());
+					l=listService.addList(1, titleNewList.getValue());
+					
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
 				}
 				windowCreateList.close();
-
-				List newList = new List(title.getValue());
-				mainLayout.setStyleName("list");
-				mainLayout.addComponent(newList);
+				mainLayout.addComponent(l);
+				mainLayout.setExpandRatio(l, 1f);
 				Notification.show("dodano liste");
 			}
 		});
@@ -207,16 +161,7 @@ public class TasksView extends VerticalLayout implements View {
 		mainLayout = new HorizontalLayout();
 		mainLayout.setSpacing(true);
 
-		Button addNewTaskBtn = new Button("Dodaj zadanie");
-		addNewTaskBtn.addClickListener(new Button.ClickListener() {
-			public void buttonClick(ClickEvent event) {
-				windowCreateTask.center();
-				getUI().addWindow(windowCreateTask);
-
-			}
-		});
-
-		gerenateLists();
+		generateLists();
 
 		mainLayout.setStyleName("bordered-grid");
 
@@ -234,53 +179,32 @@ public class TasksView extends VerticalLayout implements View {
 
 		this.addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1f);
-		windowCreateTask.setContent(subWindowForTask);
+		
 
 		windowCreateList.setContent(subWindowForList);
 
 		windowCreateBoard.setContent(subWindowForBoard);
 	}
 
-	private void gerenateLists() {
-		allLists = new ArrayList<>();
+	private void generateLists() {
 		allLists = listService.getAllList();
 
 		ArrayList<Task> listAllTasks = taskService.getAllTask();
 
 		for (int i = 0; i < allLists.size(); i++) {
-
-			final Button addNewListBtn = new Button("Dodaj zadanie");
-			addNewListBtn.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					List currentList = (List) event.getButton().getParent();
-					TasksView.currentList = currentList.getId_list();
-					windowCreateTask.center();
-					getUI().addWindow(windowCreateTask);
-
-				}
-			});
-
-			List list = new List(allLists.get(i).getName());
-			list.setStyleName("list");
-			list.setId_list(allLists.get(i).getId_list());
-			list.setSizeFull();
-			list.setSpacing(true);
-
-			list.addComponent(addNewListBtn);
-
+			
+			List cList = allLists.get(i);
 			for (int j = 0; j < listAllTasks.size(); j++) {
 
-				if (allLists.get(i).getId_list()
+				if (cList.getId_list()
 						.equals(listAllTasks.get(j).getId_list())) {
-					list.addComponent(listAllTasks.get(j));
+					cList.addComponent(listAllTasks.get(j));
 				}
 
 			}
-			mainLayout.setStyleName("list");
-			mainLayout.addComponent(list);
-			mainLayout.setExpandRatio(list, 1f);
+			//mainLayout.setStyleName("list");
+			mainLayout.addComponent(cList);
+			mainLayout.setExpandRatio(cList, 1f);
 		}
 	}
 
