@@ -1,8 +1,10 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.views;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 
+import com.paw.trelloplus.service.AuthorizationService;
+import com.paw.trelloplus.service.RegistrationService;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.validator.AbstractValidator;
 import com.vaadin.data.validator.EmailValidator;

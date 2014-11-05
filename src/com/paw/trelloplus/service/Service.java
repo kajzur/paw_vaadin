@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.service;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
@@ -6,6 +6,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.paw.trelloplus.components.List;
+import com.paw.trelloplus.components.Task;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ReadOnlyException;

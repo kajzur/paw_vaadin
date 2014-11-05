@@ -1,5 +1,7 @@
-package com.example.trelloplus;
+package com.paw.trelloplus;
 
+import com.paw.trelloplus.views.LoginView;
+import com.paw.trelloplus.views.TasksView;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;

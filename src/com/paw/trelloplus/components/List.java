@@ -1,8 +1,10 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.components;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.paw.trelloplus.service.TaskService;
+import com.paw.trelloplus.views.TasksView;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;

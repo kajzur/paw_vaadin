@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +18,7 @@ public class AuthorizationService extends AbstractService {
 		super();
 
 	}
+	
 	public String getUserId(String username){
 		usersContainer.addContainerFilter(new Compare.Equal("login", username));
 		if (!(usersContainer.size() > 0))

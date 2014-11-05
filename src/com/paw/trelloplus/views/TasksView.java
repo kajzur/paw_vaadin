@@ -1,10 +1,15 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.views;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.paw.trelloplus.components.List;
+import com.paw.trelloplus.components.Task;
+import com.paw.trelloplus.service.BoardService;
+import com.paw.trelloplus.service.ListService;
+import com.paw.trelloplus.service.TaskService;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;

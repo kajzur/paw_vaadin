@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.components;
 
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;

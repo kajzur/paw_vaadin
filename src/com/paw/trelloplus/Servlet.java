@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus;
 
 import javax.servlet.annotation.WebServlet;
 

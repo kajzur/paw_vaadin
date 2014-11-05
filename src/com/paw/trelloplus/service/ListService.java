@@ -1,10 +1,11 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.paw.trelloplus.components.List;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.sqlcontainer.RowId;

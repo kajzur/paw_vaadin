@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus.service;
 
 import java.io.Serializable;
 import java.sql.SQLException;

@@ -1,4 +1,4 @@
-package com.example.trelloplus;
+package com.paw.trelloplus;
 
 import java.io.BufferedReader;
 import java.io.IOException;
