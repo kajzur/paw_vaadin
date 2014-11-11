@@ -1,5 +1,8 @@
 package com.paw.trelloplus.components;
 
+import java.util.logging.Logger;
+
+import com.paw.trelloplus.views.TasksView;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -12,8 +15,19 @@ public class Task extends CustomComponent {
 	 */
 	private static final long serialVersionUID = 7689196414848406296L;
 	private String id_list;
+	private String task_id;
+	public String getTask_id() {
+		return task_id;
+	}
+
+	public void setTask_id(String task_id) {
+		this.task_id = task_id;
+	}
+
 	private String title;
 	private String desc;
+	private final static Logger logger =
+	          Logger.getLogger(TasksView.class.getName());
 
 	public Task(String title, String desc) {
 		this.setStyleName("task");

@@ -2,8 +2,9 @@ package com.paw.trelloplus.views;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import utils.ListDropHandler;
 
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.components.Task;
@@ -15,9 +16,9 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -154,8 +155,13 @@ public class TasksView extends VerticalLayout implements View {
 					Notification.show(e.getMessage());
 				}
 				windowCreateList.close();
-				mainLayout.addComponent(l);
-				mainLayout.setExpandRatio(l, 1f);
+				
+				DragAndDropWrapper dd = new DragAndDropWrapper(l);
+				dd.setData(l);
+				mainLayout.addComponent(dd);
+				dd.setDropHandler(new ListDropHandler(allLists));
+				mainLayout.setExpandRatio(dd, 1f);
+				allLists.add(l);
 				Notification.show("dodano liste");
 			}
 		});
@@ -207,9 +213,12 @@ public class TasksView extends VerticalLayout implements View {
 				}
 
 			}
-			//mainLayout.setStyleName("list");
-			mainLayout.addComponent(cList);
-			mainLayout.setExpandRatio(cList, 1f);
+			DragAndDropWrapper dd = new DragAndDropWrapper(cList);
+			dd.setData(cList);
+			
+			dd.setDropHandler(new ListDropHandler(allLists));
+			mainLayout.addComponent(dd);
+			mainLayout.setExpandRatio(dd, 1f);
 		}
 	}
 

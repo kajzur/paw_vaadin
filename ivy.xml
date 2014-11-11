@@ -35,7 +35,9 @@
 		<!-- Precompiled DefaultWidgetSet -->
 		<dependency org="com.vaadin" name="vaadin-client-compiled"
 			rev="&vaadin.version;" />
-
+		<!--  apache commons -->
+		<dependency org="org.apache.commons" name="commons-collections4" rev="4.0"/>
+		
 		<!-- Vaadin client side, needed for widget set compilation -->
 		<dependency org="com.vaadin" name="vaadin-client" rev="&vaadin.version;"
 			 conf="widgetset-compile->default" />

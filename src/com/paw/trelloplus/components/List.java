@@ -1,12 +1,15 @@
 package com.paw.trelloplus.components;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.paw.trelloplus.service.TaskService;
 import com.paw.trelloplus.views.TasksView;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -14,9 +17,8 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 
-public class List extends VerticalLayout {
+public class List extends VerticalLayout  {
 
 	/**
 	 * 
@@ -28,13 +30,26 @@ public class List extends VerticalLayout {
 	private Window windowCreateTask;
 	private VerticalLayout subWindowForTask;
 	private TaskService taskService;
-
+	private final static Logger logger =
+	          Logger.getLogger(List.class.getName());
+	@Override
+	public void addComponent(Component c) {
+		if(c instanceof Task){
+			DragAndDropWrapper dd = new DragAndDropWrapper(c);
+			dd.setDragStartMode(DragStartMode.COMPONENT);
+			dd.setData(c);
+			super.addComponent(dd);
+		}
+		else
+		super.addComponent(c);
+	}
 	public List(String title) {
 		taskService = new TaskService();
 		VerticalLayout vt = new VerticalLayout();
 		vt.addComponent(new Label(title));
 		vt.setStyleName("list-header");
 		setStyleName("list");
+		
 		addComponent(vt);
 		Button addNewListBtn = new Button("Dodaj zadanie");
 

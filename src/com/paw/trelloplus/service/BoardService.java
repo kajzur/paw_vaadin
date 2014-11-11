@@ -1,12 +1,10 @@
 package com.paw.trelloplus.service;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 import com.paw.trelloplus.components.Board;
 import com.vaadin.data.Item;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 
