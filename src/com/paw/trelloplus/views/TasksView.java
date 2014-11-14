@@ -1,11 +1,13 @@
 package com.paw.trelloplus.views;
 
+import java.awt.MenuItem;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import utils.ListDropHandler;
 
+import com.paw.trelloplus.components.Board;
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.service.BoardService;
@@ -18,6 +20,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
@@ -29,6 +33,8 @@ public class TasksView extends VerticalLayout implements View {
 	 * 
 	 */
 	private static final long serialVersionUID = -473387470476587223L;
+	public static String ID_USER;
+	public static String ID_BOARD;
 	public static String currentList = "";
 	public static final String NAME = "main";
 	public Window windowCreateList;
@@ -48,9 +54,21 @@ public class TasksView extends VerticalLayout implements View {
 	public ListService listService;
 
 	public TasksView() {
+		
 		boardService = new BoardService();
 		taskService = new TaskService();
 		listService = new ListService();
+		
+		MenuBar menubar = new MenuBar();
+
+		final MenuBar.MenuItem chooseBoards = menubar.addItem("wybierz tablicê", null);
+		ArrayList<Board> boards = boardService.getAllBoard();
+		for(Board board : boards)
+		{
+			chooseBoards.addItem(board.getName(), menuCommand);
+		}
+		addComponent(menubar);
+		    
 
 		Button addNewBoardBtn = new Button("Dodaj tablice");
 		addNewBoardBtn.addClickListener(new Button.ClickListener() {
@@ -62,7 +80,9 @@ public class TasksView extends VerticalLayout implements View {
 				getUI().addWindow(windowCreateBoard);
 			}
 		});
-
+		
+		
+		
 		Button addNewListBtn = new Button("Dodaj nowa liste");
 		addNewListBtn.addClickListener(new Button.ClickListener() {
 
@@ -102,7 +122,7 @@ public class TasksView extends VerticalLayout implements View {
 			@Override
 			public void buttonClick(ClickEvent event) {
 				try {
-					boardService.addNew(titleBoard.getValue(), getSession().getAttribute("id").toString());
+					boardService.addNew(titleBoard.getValue());
 					Notification.show("Dodano..");
 				} catch (UnsupportedOperationException | SQLException e) {
 					// TODO Auto-generated catch block
@@ -149,7 +169,7 @@ public class TasksView extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				List l = null;
 				try {
-					l=listService.addList(1, titleNewList.getValue());
+					l=listService.addList(1, titleNewList.getValue(), Integer.parseInt(String.valueOf(getSession().getAttribute("id"))) );
 					
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
@@ -187,7 +207,6 @@ public class TasksView extends VerticalLayout implements View {
 		buttonMainGroupLayout.addComponent(logout);
 
 		this.addComponent(buttonMainGroupLayout);
-
 		this.addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1f);
 		
@@ -217,6 +236,7 @@ public class TasksView extends VerticalLayout implements View {
 			dd.setData(cList);
 			
 			dd.setDropHandler(new ListDropHandler(allLists));
+			
 			mainLayout.addComponent(dd);
 			mainLayout.setExpandRatio(dd, 1f);
 		}
@@ -228,4 +248,12 @@ public class TasksView extends VerticalLayout implements View {
 		String username = String.valueOf(getSession().getAttribute("user"));
 
 	}
+	
+	 private Command menuCommand = new Command() {	       
+			@Override
+			public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+				//tutaj mamy zmieniæ tablicê! 
+				
+			}
+	    };
 }

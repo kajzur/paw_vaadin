@@ -11,6 +11,8 @@ public class Board extends CustomComponent{
 	 * 
 	 */
 	private static final long serialVersionUID = -8769513290840624388L;
+	private String name;
+	private String boardId;
 
 	public Board(String title)
 	{
@@ -26,4 +28,20 @@ public class Board extends CustomComponent{
 		setCompositionRoot(vt);
 	}
 	
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+	public String getName()
+	{
+		return this.name;
+	}
+	public void setBoardId(String boardId)
+	{
+		this.boardId = boardId;
+	}
+	public String getBoardId()
+	{
+		return this.boardId;
+	}
 }

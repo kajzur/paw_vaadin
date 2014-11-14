@@ -1,6 +1,8 @@
 package com.paw.trelloplus.service;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.paw.trelloplus.components.Task;
@@ -33,20 +35,26 @@ public class TaskService extends AbstractService {
 		tasksContainer.commit();
 		return true;
 	}
-	public Task addTask(String id, String title, String description)
+	public Task addTask(String listId, String title, String description)
 			throws UnsupportedOperationException, SQLException {
 
 		Object rowId = tasksContainer.addItem();
 		Item rowItem = tasksContainer.getItem(rowId);
-		rowItem.getItemProperty("id_list").setValue(Integer.parseInt(id));
-		
+		rowItem.getItemProperty("id_list").setValue(Integer.parseInt(listId));	
 		rowItem.getItemProperty("name").setValue(title);
 		rowItem.getItemProperty("description").setValue(description);
-		
 		tasksContainer.commit();
+		
+		Connection conn = connectionPool.reserveConnection();
+        Statement statement = conn.createStatement();
+        statement.executeUpdate("INSERT INTO tasks_users values("+(((RowId) tasksContainer.lastItemId()).toString())+", "+"11"+")");
+        statement.close();
+        conn.commit(); 
+        
+        
 		String newId = (String)(((RowId)tasksContainer.lastItemId()).getId()[0]+"");
 		Task t = new Task(title, description);
-		t.setId_list(id);
+		t.setId_list(listId);
 		t.setTask_id(newId);
 		return t;
 	}

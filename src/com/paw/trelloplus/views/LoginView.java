@@ -29,7 +29,7 @@ public class LoginView extends CustomComponent implements View,
 	 * 
 	 */
 	private static final long serialVersionUID = -7620830730207589253L;
-
+	
 	public static final String NAME = "login";
 
 	private final Button signinButton;
@@ -43,6 +43,7 @@ public class LoginView extends CustomComponent implements View,
 	private AuthorizationService authorizationService;
 
 	public LoginView() {
+		
 		setSizeFull();
 
 		registrationService = new RegistrationService();
