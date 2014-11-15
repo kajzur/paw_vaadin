@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.12
+-- version 4.0.4.1
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 04 Lis 2014, 17:36
--- Server version: 5.5.36
--- PHP Version: 5.4.27
+-- Czas wygenerowania: 15 Lis 2014, 23:00
+-- Wersja serwera: 5.5.32
+-- Wersja PHP: 5.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,8 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `trello_plus`
+-- Baza danych: `trello_plus`
 --
+CREATE DATABASE IF NOT EXISTS `trello_plus` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `trello_plus`;
 
 -- --------------------------------------------------------
 
@@ -29,31 +31,37 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS `boards` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `id_user` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Zrzut danych tabeli `boards`
 --
 
-INSERT INTO `boards` (`id`, `name`, `id_user`) VALUES
-(1, '12', 11);
+INSERT INTO `boards` (`id`, `name`) VALUES
+(1, '12'),
+(2, 'tabliczka Paskudkowa'),
+(3, 'taaaablicaaaa A');
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `cards`
+-- Struktura tabeli dla tabeli `boards_users`
 --
 
-CREATE TABLE IF NOT EXISTS `cards` (
-  `id_task` int(255) NOT NULL AUTO_INCREMENT,
-  `id_list` int(255) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `description` varchar(255) NOT NULL,
-  PRIMARY KEY (`id_task`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+CREATE TABLE IF NOT EXISTS `boards_users` (
+  `id_board` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Zrzut danych tabeli `boards_users`
+--
+
+INSERT INTO `boards_users` (`id_board`, `id_user`) VALUES
+(2, 11),
+(3, 11);
 
 -- --------------------------------------------------------
 
@@ -66,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `id_board` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=41 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=57 ;
 
 --
 -- Zrzut danych tabeli `lists`
@@ -77,7 +85,22 @@ INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
 (37, 1, 'druga'),
 (38, 1, 'trzecia'),
 (39, 1, 'czwarta'),
-(40, 1, 'piata');
+(40, 1, 'piata'),
+(41, 1, 'listaaaa'),
+(42, 1, 'nowa lista dla uzytkownika nr 11'),
+(43, 1, 'kolejny test dla uzytkownika 11'),
+(44, 1, 'test for 11'),
+(45, 1, 'test for 11'),
+(47, 1, 'listaa'),
+(48, 1, 'dddd'),
+(49, 1, 'lista'),
+(50, 1, 'jjj'),
+(51, 1, 'kiki'),
+(52, 1, 'agowa'),
+(53, 1, 'agowa2'),
+(54, 1, 'aaaaaa'),
+(55, 1, 'nowa Lista'),
+(56, 1, 'nowa Lista druga');
 
 -- --------------------------------------------------------
 
@@ -91,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `name` text COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=72 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=77 ;
 
 --
 -- Zrzut danych tabeli `tasks`
@@ -99,17 +122,33 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 
 INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`) VALUES
 (60, 36, 'task', 'w liscie 1'),
-(61, 36, 'task 2', 'w liscie 1'),
-(62, 37, 'task ', 'w liscie 2'),
+(61, 37, 'task 2', 'w liscie 1'),
+(62, 38, 'task ', 'w liscie 2'),
 (63, 38, 'task', 'w liscie 3'),
 (64, 38, 'task 2', 'w liscie 3'),
-(65, 39, '1', ''),
-(66, 39, '2', ''),
+(65, 41, '1', ''),
+(66, 38, '2', ''),
 (67, 39, '3', ''),
-(68, 39, '4', ''),
-(69, 39, '5', ''),
+(68, 36, '4', ''),
+(69, 40, '5', ''),
 (70, 39, '6', ''),
-(71, 40, ':)', '');
+(71, 37, ':)', ''),
+(72, 37, 'zadanie', 'opis zadania'),
+(73, 41, 'zadanie', 'ooooopisss zadanka'),
+(74, 43, 'Zadanie', 'opis zadania'),
+(75, 55, 'Nowe zadanie', 'I jego opis'),
+(76, 56, 'zadanko ', 'disis');
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `tasks_users`
+--
+
+CREATE TABLE IF NOT EXISTS `tasks_users` (
+  `id_task` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
