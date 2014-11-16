@@ -6,6 +6,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import com.paw.trelloplus.components.Task;
+import com.paw.trelloplus.views.TasksView;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.Compare;
@@ -47,7 +48,9 @@ public class TaskService extends AbstractService {
 		
 		Connection conn = connectionPool.reserveConnection();
         Statement statement = conn.createStatement();
-        statement.executeUpdate("INSERT INTO tasks_users values("+(((RowId) tasksContainer.lastItemId()).toString())+", "+"11"+")");
+        //statement.executeUpdate("INSERT INTO tasks_users values("+(((RowId) tasksContainer.lastItemId()).toString())+", "+"11"+")");
+        statement.executeUpdate("INSERT INTO tasks_users values("+(((RowId) tasksContainer.lastItemId()).toString())+", "+TasksView.ID_USER+")");
+        
         statement.close();
         conn.commit(); 
         

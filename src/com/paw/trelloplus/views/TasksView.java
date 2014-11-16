@@ -10,6 +10,7 @@ import utils.ListDropHandler;
 import com.paw.trelloplus.components.Board;
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.components.Task;
+import com.paw.trelloplus.service.AuthorizationService;
 import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.service.ListService;
 import com.paw.trelloplus.service.TaskService;
@@ -49,23 +50,29 @@ public class TasksView extends VerticalLayout implements View {
 
 	public Task task;
 	public ArrayList<List> allLists;
+	ArrayList<Board> boards;
 
 	public TaskService taskService;
 	public ListService listService;
+	public AuthorizationService authorizationService;
 
 	public TasksView() {
 		
+		authorizationService = new AuthorizationService();
 		boardService = new BoardService();
 		taskService = new TaskService();
 		listService = new ListService();
 		
-		MenuBar menubar = new MenuBar();
+		MenuBar menubar = new MenuBar();	
 
 		final MenuBar.MenuItem chooseBoards = menubar.addItem("wybierz tablicê", null);
-		ArrayList<Board> boards = boardService.getAllBoard();
+		boards = boardService.getAllBoard();
+		ID_BOARD = boards.get(0).getBoardId();
+		
 		for(Board board : boards)
 		{
 			chooseBoards.addItem(board.getName(), menuCommand);
+			chooseBoards.addSeparator();
 		}
 		addComponent(menubar);
 		    
@@ -134,8 +141,6 @@ public class TasksView extends VerticalLayout implements View {
 		});
 
 
-
-
 		// Okienko do dodawania tablicy
 		windowCreateBoard = new Window("Dodawanie tablicy");
 		windowCreateBoard.setModal(true);
@@ -169,7 +174,7 @@ public class TasksView extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 				List l = null;
 				try {
-					l=listService.addList(1, titleNewList.getValue(), Integer.parseInt(String.valueOf(getSession().getAttribute("id"))) );
+					l=listService.addList(Integer.parseInt(ID_BOARD), titleNewList.getValue(), Integer.parseInt(String.valueOf(getSession().getAttribute("id"))) );
 					
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
@@ -192,7 +197,7 @@ public class TasksView extends VerticalLayout implements View {
 		mainLayout = new HorizontalLayout();
 		mainLayout.setSpacing(true);
 
-		generateLists();
+		generateLists(ID_BOARD);
 
 		mainLayout.setStyleName("bordered-grid");
 
@@ -216,8 +221,20 @@ public class TasksView extends VerticalLayout implements View {
 		windowCreateBoard.setContent(subWindowForBoard);
 	}
 
-	private void generateLists() {
-		allLists = listService.getAllList();
+	private void generateLists(String idCurentBoard) {
+		
+		ArrayList<List> allLists2 = new ArrayList<List>();
+		
+		allLists2 = listService.getAllList();
+			
+		allLists = new ArrayList<List>();
+		for(List list:allLists2)
+		{
+			if(list.getId_board().equals(idCurentBoard))
+			{
+				allLists.add(list);
+			}
+		}
 
 		ArrayList<Task> listAllTasks = taskService.getAllTask();
 
@@ -241,6 +258,7 @@ public class TasksView extends VerticalLayout implements View {
 			mainLayout.setExpandRatio(dd, 1f);
 		}
 	}
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {
@@ -252,8 +270,19 @@ public class TasksView extends VerticalLayout implements View {
 	 private Command menuCommand = new Command() {	       
 			@Override
 			public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
-				//tutaj mamy zmieniæ tablicê! 
-				
+				//tutaj mamy zmieniæ tablicê!
+			
+				for(Board board : boards)
+				{
+					if(selectedItem.getText().equals(board.getName()))
+					{		
+						ID_BOARD = board.getBoardId();
+						mainLayout.removeAllComponents();
+						generateLists(ID_BOARD);
+
+					}
+
+				}
 			}
 	    };
 }
