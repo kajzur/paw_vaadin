@@ -3,6 +3,7 @@ package com.paw.trelloplus.views;
 import java.awt.MenuItem;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.ListDropHandler;
@@ -34,7 +35,6 @@ public class TasksView extends VerticalLayout implements View {
 	 * 
 	 */
 	private static final long serialVersionUID = -473387470476587223L;
-	public static String ID_USER;
 	public static String ID_BOARD;
 	public static String currentList = "";
 	public static final String NAME = "main";
@@ -68,6 +68,7 @@ public class TasksView extends VerticalLayout implements View {
 		final MenuBar.MenuItem chooseBoards = menubar.addItem("wybierz tablicê", null);
 		boards = boardService.getAllBoard();
 		ID_BOARD = boards.get(0).getBoardId();
+
 		
 		for(Board board : boards)
 		{
@@ -76,46 +77,12 @@ public class TasksView extends VerticalLayout implements View {
 		}
 		addComponent(menubar);
 		    
+		final MenuBar.MenuItem addNewBoard = menubar.addItem("dodaj tablicê", addTable );
+		final MenuBar.MenuItem addNewList = menubar.addItem("dodaj listê", addList);
+		final MenuBar.MenuItem logoutMenu = menubar.addItem("wyloguj", logoutCommand);
 
-		Button addNewBoardBtn = new Button("Dodaj tablice");
-		addNewBoardBtn.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-
-				windowCreateBoard.center();
-				getUI().addWindow(windowCreateBoard);
-			}
-		});
-		
-		
-		
-		Button addNewListBtn = new Button("Dodaj nowa liste");
-		addNewListBtn.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				windowCreateList.center();
-				getUI().addWindow(windowCreateList);
-
-			}
-		});
-
-		Button logout = new Button("Wyloguj", new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(com.vaadin.ui.Button.ClickEvent event) {
-
-				getSession().setAttribute("user", null);
-				getUI().getNavigator().navigateTo(NAME);
-
-			}
-		});
 
 		// Okienko do dodawania zadania
-
-
-
 
 		final TextField titleBoard = new TextField();
 		titleBoard.setInputPrompt("Podaj tytul tablicy");
@@ -131,6 +98,10 @@ public class TasksView extends VerticalLayout implements View {
 				try {
 					boardService.addNew(titleBoard.getValue());
 					Notification.show("Dodano..");
+					chooseBoards.addItem(titleBoard.getValue(), menuCommand);
+					chooseBoards.addSeparator();
+					boardService.initContainers();
+					boards = boardService.getAllBoard();
 				} catch (UnsupportedOperationException | SQLException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -206,12 +177,6 @@ public class TasksView extends VerticalLayout implements View {
 		HorizontalLayout buttonMainGroupLayout = new HorizontalLayout();
 		buttonMainGroupLayout.setSizeFull();
 		buttonMainGroupLayout.setSpacing(true);
-
-		buttonMainGroupLayout.addComponent(addNewBoardBtn);
-		buttonMainGroupLayout.addComponent(addNewListBtn);
-		buttonMainGroupLayout.addComponent(logout);
-
-		this.addComponent(buttonMainGroupLayout);
 		this.addComponent(mainLayout);
 		setExpandRatio(mainLayout, 1f);
 		
@@ -285,4 +250,36 @@ public class TasksView extends VerticalLayout implements View {
 				}
 			}
 	    };
+	    
+	    private Command addTable = new Command() {	       
+			@Override
+			public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+				
+				windowCreateBoard.center();
+    			getUI().addWindow(windowCreateBoard);
+				
+			}
+	    };
+	    
+	    private Command addList = new Command() {	       
+			@Override
+			public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+				
+				windowCreateList.center();
+				getUI().addWindow(windowCreateList);
+				
+			}
+	    };
+	    
+	    private Command logoutCommand = new Command() {	       
+			@Override
+			public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+				
+				getSession().setAttribute("user", null);
+				getUI().getNavigator().navigateTo(NAME);
+				
+			}
+	    };
+	    
+	  
 }

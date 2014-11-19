@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.paw.trelloplus.components.Board;
@@ -21,8 +22,7 @@ import com.vaadin.navigator.View;
 public class BoardService extends AbstractService {
 	
 	
-	private SQLContainer boardContainer;
-	private SQLContainer boardsByUserContainer;
+	private SQLContainer boardContainer, boardsByUserContainer;
 	private final static Logger logger = Logger.getLogger(BoardService.class.getName());
 	
 	
@@ -40,15 +40,15 @@ public class BoardService extends AbstractService {
 //	}
 	
 	@Override
-	protected void initContainers()
+	public void initContainers()
 	{
 		
 		try {
 			TableQuery q1 = new TableQuery("boards", connectionPool);
 			q1.setVersionColumn("VERSION");
 			boardContainer = new SQLContainer(q1);
-			
-			FreeformQuery q2 = new FreeformQuery("SELECT b.id, b.name from boards_users bu join boards b on bu.id_board = b.id WHERE id_user ="+TasksView.ID_USER, connectionPool);
+			logger.log(Level.SEVERE, LoginView.ID_USER);
+			FreeformQuery q2 = new FreeformQuery("SELECT b.id, b.name from boards_users bu join boards b on bu.id_board = b.id WHERE id_user = 11", connectionPool);
 			boardsByUserContainer = new SQLContainer(q2);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -78,7 +78,7 @@ public class BoardService extends AbstractService {
 		
 		Connection conn = connectionPool.reserveConnection();
         Statement statement = conn.createStatement();
-        statement.executeUpdate("INSERT INTO boards_users values("+(((RowId) boardContainer.lastItemId()).toString())+", "+TasksView.ID_USER+")");
+        statement.executeUpdate("INSERT INTO boards_users values("+(((RowId) boardContainer.lastItemId()).toString())+", 11)");
         statement.close();
         conn.commit();                   
 		
@@ -88,9 +88,9 @@ public class BoardService extends AbstractService {
 	
 	public ArrayList<Board> getAllBoard() {
 		ArrayList<Board> boards = new ArrayList<Board>();
-		for (int i = 0; i < boardContainer.size(); i++) {
-			Object id = boardContainer.getIdByIndex(i);
-			Item item = boardContainer.getItem(id);
+		for (int i = 0; i < boardsByUserContainer.size(); i++) {
+			Object id = boardsByUserContainer.getIdByIndex(i);
+			Item item = boardsByUserContainer.getItem(id);
 			Property listId = item.getItemProperty("id");
 			Property name = item.getItemProperty("name");
 			Board board = new Board((String) name.getValue());

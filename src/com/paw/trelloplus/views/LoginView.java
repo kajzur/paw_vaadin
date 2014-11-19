@@ -2,8 +2,11 @@ package com.paw.trelloplus.views;
 
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.paw.trelloplus.service.AuthorizationService;
+import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.service.RegistrationService;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.validator.AbstractValidator;
@@ -29,9 +32,9 @@ public class LoginView extends CustomComponent implements View,
 	 * 
 	 */
 	private static final long serialVersionUID = -7620830730207589253L;
-	
+	private final static Logger logger = Logger.getLogger(LoginView.class.getName());
 	public static final String NAME = "login";
-
+	public static  String ID_USER = "";
 	private final Button signinButton;
 	private final TextField user;
 	private final PasswordField password;
@@ -39,13 +42,14 @@ public class LoginView extends CustomComponent implements View,
 	private final Window win;
 	private final VerticalLayout subWindowLayout;
 
+
 	private RegistrationService registrationService;
 	private AuthorizationService authorizationService;
 
 	public LoginView() {
 		
 		setSizeFull();
-
+		
 		registrationService = new RegistrationService();
 		authorizationService = new AuthorizationService();
 
@@ -83,6 +87,11 @@ public class LoginView extends CustomComponent implements View,
 					getSession().setAttribute("user", username);
 					getSession().setAttribute("id", authorizationService.getUserId(username));
 					getUI().getNavigator().navigateTo(TasksView.NAME);
+					
+					ID_USER = authorizationService.getUserId(username);
+					logger.log(Level.SEVERE, ID_USER);
+			
+			
 
 				} else {
 
