@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.views.LoginView;
@@ -18,7 +20,7 @@ import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 public class TaskService extends AbstractService {
 
 	private SQLContainer tasksContainer;
-
+	private final static Logger logger = Logger.getLogger(TaskService.class.getName());
 	
 	public TaskService() {
 		super();
@@ -57,13 +59,12 @@ public class TaskService extends AbstractService {
         
         
 		String newId = (String)(((RowId)tasksContainer.lastItemId()).getId()[0]+"");
-		Task t = new Task(title, description);
-		t.setId_list(listId);
-		t.setTask_id(newId);
+		Task t = new Task(newId, title, description, listId);
+	
 		return t;
 	}
 
-	public ArrayList<Task> getAllTask() {
+	public ArrayList<Task> getAllTask() throws SQLException {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
@@ -74,12 +75,10 @@ public class TaskService extends AbstractService {
 			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
-			Task task = new Task((String) name.getValue(),
-					(String) desc.getValue());
-			task.setTask_id(task_id.getValue()+"");
-			task.setId_list(id_list.getValue() + "");
-			task.setTitle(name.getValue() + "");
-			task.setDesc(desc.getValue() + "");
+			Task task = new Task(task_id.getValue().toString(),
+					name.getValue().toString(),
+					desc.getValue().toString(),
+					id_list.getValue().toString());
 
 			listAllTasks.add(task);
 		}

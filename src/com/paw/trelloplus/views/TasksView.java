@@ -56,7 +56,7 @@ public class TasksView extends VerticalLayout implements View {
 	public ListService listService;
 	public AuthorizationService authorizationService;
 
-	public TasksView() {
+	public TasksView() throws SQLException {
 		
 		authorizationService = new AuthorizationService();
 		boardService = new BoardService();
@@ -186,7 +186,7 @@ public class TasksView extends VerticalLayout implements View {
 		windowCreateBoard.setContent(subWindowForBoard);
 	}
 
-	private void generateLists(String idCurentBoard) {
+	private void generateLists(String idCurentBoard) throws SQLException {
 		
 		ArrayList<List> allLists2 = new ArrayList<List>();
 		
@@ -243,7 +243,12 @@ public class TasksView extends VerticalLayout implements View {
 					{		
 						ID_BOARD = board.getBoardId();
 						mainLayout.removeAllComponents();
-						generateLists(ID_BOARD);
+						try {
+							generateLists(ID_BOARD);
+						} catch (SQLException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 
 					}
 

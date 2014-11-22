@@ -95,7 +95,7 @@ public class Service implements Serializable {
 		listsContainer.commit();
 	}
 
-	public ArrayList<Task> getAllTask() {
+	public ArrayList<Task> getAllTask() throws SQLException {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
@@ -105,12 +105,8 @@ public class Service implements Serializable {
 			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
-			Task t = new Task((String) name.getValue(),
-					(String) desc.getValue());
-
-			t.setId_list(id_list.getValue() + "");
-			t.setTitle(name.getValue() + "");
-			t.setDesc(desc.getValue() + "");
+			Task t = new Task(id.toString(), name.getValue().toString(),
+					desc.getValue().toString(), id_list.getValue().toString());
 
 			listAllTasks.add(t);
 		}

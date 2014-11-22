@@ -30,8 +30,8 @@ public class List extends VerticalLayout  {
 	private Window windowCreateTask;
 	private VerticalLayout subWindowForTask;
 	private TaskService taskService;
-	private final static Logger logger =
-	          Logger.getLogger(List.class.getName());
+	private final static Logger logger =Logger.getLogger(List.class.getName());
+	
 	@Override
 	public void addComponent(Component c) {
 		if(c instanceof Task){

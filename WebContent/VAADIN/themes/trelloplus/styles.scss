@@ -16,26 +16,25 @@ body{
 }
 .task{
 	width: 200px !important;
-	height: 100px !important;
+	height: 200px !important;
 	background-color:orange;
 	border: 1px solid !important;
+	margin:2px auto 2px auto;
+	padding:0 2px 0 2px;
 }
 .board{
 	width: 100% !important;
 	height: 100% !important;
-	background-color:yellow;
+	background-color:green;
 	
 }
 
 .list{
-	width: 200px !important;
+	width: 230px !important;
 	height: 100% !important;
 	background-color:yellow;
+	text-align: center;
 	
-}
-
-.list-header{
-	border-bottom: 1px solid !important;
 }
 
 .v-slot-bordered-grid{
