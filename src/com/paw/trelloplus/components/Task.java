@@ -6,8 +6,10 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import utils.CommentsButtonHandler;
+
 import com.google.gwt.user.server.rpc.core.java.util.Arrays;
-import com.paw.trelloplus.User;
+import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.service.AuthorizationService;
 import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.views.TasksView;
@@ -92,6 +94,7 @@ public class Task extends CustomComponent {
 		vt.addComponent(l1);
 		vt.addComponent(l2);
 		vt.addComponent(addUser);
+		vt.addComponent(getCommentButton("..."));
 		ArrayList<User> users = authorizationService.getUsersByTask(getTask_id());
 		
 		for(User user : users)
@@ -193,6 +196,12 @@ private void prepareWindow() throws SQLException{
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+	
+	private Button getCommentButton(String name){
+		Button b = new Button(name);
+		b.addClickListener(new CommentsButtonHandler(this));
+		return b;
 	}
 
 }

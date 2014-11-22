@@ -1,4 +1,4 @@
-package com.paw.trelloplus;
+package com.paw.trelloplus.models;
 
 import java.io.Serializable;
 import java.util.logging.Level;
@@ -34,11 +34,6 @@ public class User implements Serializable{
 	@Override
 	public String toString() {
 		return login;
-	}
-	@Override
-	public boolean equals(Object arg0) {
-		logger.log(Level.SEVERE, arg0.toString());
-		return super.equals(arg0);
 	}
 
 	

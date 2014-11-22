@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.4.1
+-- version 4.1.12
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Czas wygenerowania: 15 Lis 2014, 23:00
--- Wersja serwera: 5.5.32
--- Wersja PHP: 5.4.19
+-- Generation Time: 23 Lis 2014, 00:05
+-- Server version: 5.5.36
+-- PHP Version: 5.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,10 +17,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Baza danych: `trello_plus`
+-- Database: `trello_plus`
 --
-CREATE DATABASE IF NOT EXISTS `trello_plus` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `trello_plus`;
 
 -- --------------------------------------------------------
 
@@ -33,7 +31,7 @@ CREATE TABLE IF NOT EXISTS `boards` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
 
 --
 -- Zrzut danych tabeli `boards`
@@ -42,7 +40,9 @@ CREATE TABLE IF NOT EXISTS `boards` (
 INSERT INTO `boards` (`id`, `name`) VALUES
 (1, '12'),
 (2, 'tabliczka Paskudkowa'),
-(3, 'taaaablicaaaa A');
+(3, 'taaaablicaaaa A'),
+(4, 'aaa'),
+(5, 'testtt');
 
 -- --------------------------------------------------------
 
@@ -61,7 +61,9 @@ CREATE TABLE IF NOT EXISTS `boards_users` (
 
 INSERT INTO `boards_users` (`id_board`, `id_user`) VALUES
 (2, 11),
-(3, 11);
+(3, 11),
+(1, 11),
+(5, 11);
 
 -- --------------------------------------------------------
 
@@ -74,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `id_board` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=57 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=58 ;
 
 --
 -- Zrzut danych tabeli `lists`
@@ -92,15 +94,7 @@ INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
 (44, 1, 'test for 11'),
 (45, 1, 'test for 11'),
 (47, 1, 'listaa'),
-(48, 1, 'dddd'),
-(49, 1, 'lista'),
-(50, 1, 'jjj'),
-(51, 1, 'kiki'),
-(52, 1, 'agowa'),
-(53, 1, 'agowa2'),
-(54, 1, 'aaaaaa'),
-(55, 1, 'nowa Lista'),
-(56, 1, 'nowa Lista druga');
+(57, 2, 'brum');
 
 -- --------------------------------------------------------
 
@@ -114,30 +108,31 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `name` text COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=77 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=78 ;
 
 --
 -- Zrzut danych tabeli `tasks`
 --
 
 INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`) VALUES
-(60, 36, 'task', 'w liscie 1'),
-(61, 37, 'task 2', 'w liscie 1'),
-(62, 38, 'task ', 'w liscie 2'),
+(60, 37, 'task', 'w liscie 1'),
+(61, 36, 'task 2', 'w liscie 1'),
+(62, 39, 'task ', 'w liscie 2'),
 (63, 38, 'task', 'w liscie 3'),
-(64, 38, 'task 2', 'w liscie 3'),
-(65, 41, '1', ''),
-(66, 38, '2', ''),
-(67, 39, '3', ''),
-(68, 36, '4', ''),
-(69, 40, '5', ''),
+(64, 39, 'task 2', 'w liscie 3'),
+(65, 40, '1', ''),
+(66, 41, '2', ''),
+(67, 38, '3', ''),
+(68, 37, '4', ''),
+(69, 38, '5', ''),
 (70, 39, '6', ''),
-(71, 37, ':)', ''),
-(72, 37, 'zadanie', 'opis zadania'),
-(73, 41, 'zadanie', 'ooooopisss zadanka'),
+(71, 38, ':)', ''),
+(72, 39, 'zadanie', 'opis zadania'),
+(73, 40, 'zadanie', 'ooooopisss zadanka'),
 (74, 43, 'Zadanie', 'opis zadania'),
 (75, 55, 'Nowe zadanie', 'I jego opis'),
-(76, 56, 'zadanko ', 'disis');
+(76, 56, 'zadanko ', 'disis'),
+(77, 57, 'asd', 'sdd');
 
 -- --------------------------------------------------------
 
@@ -149,6 +144,55 @@ CREATE TABLE IF NOT EXISTS `tasks_users` (
   `id_task` int(11) NOT NULL,
   `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Zrzut danych tabeli `tasks_users`
+--
+
+INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
+(77, 11),
+(63, 11),
+(63, 12),
+(71, 12),
+(71, 13),
+(62, 11),
+(62, 12);
+
+-- --------------------------------------------------------
+
+--
+-- Struktura tabeli dla tabeli `task_comments`
+--
+
+CREATE TABLE IF NOT EXISTS `task_comments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `task_id` int(11) NOT NULL,
+  `created` datetime NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `content` text COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=22 ;
+
+--
+-- Zrzut danych tabeli `task_comments`
+--
+
+INSERT INTO `task_comments` (`id`, `task_id`, `created`, `user_id`, `content`) VALUES
+(1, 65, '2014-11-20 19:21:05', 11, 'testowy content'),
+(8, 65, '2014-11-20 21:09:45', 11, 'nwy'),
+(9, 65, '2014-11-20 21:12:36', 11, 'fsfsdf'),
+(10, 65, '2014-11-20 21:15:48', 11, 'sdsd'),
+(11, 65, '2014-11-20 21:19:39', 11, 'sdsd'),
+(12, 65, '2014-11-20 21:19:40', 11, 'sdsdsads'),
+(13, 65, '2014-11-20 21:19:41', 11, 'sdsdsads'),
+(14, 65, '2014-11-20 21:19:41', 11, 'sdsdsads'),
+(15, 65, '2014-11-20 21:19:42', 11, 'sdsdsads'),
+(16, 63, '2014-11-20 21:22:40', 11, 'pierwszy'),
+(17, 69, '2014-11-20 21:40:43', 11, 'aa'),
+(18, 60, '2014-11-20 22:14:39', 11, 'brum\n'),
+(19, 71, '2014-11-23 00:04:26', 11, 'dasd'),
+(20, 71, '2014-11-23 00:04:27', 11, 'dasdadasdas'),
+(21, 71, '2014-11-23 00:04:29', 11, 'dsad');
 
 -- --------------------------------------------------------
 

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.paw.trelloplus.User;
 import com.paw.trelloplus.components.List;
+import com.paw.trelloplus.models.User;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
