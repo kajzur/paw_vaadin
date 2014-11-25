@@ -2,22 +2,18 @@ package com.paw.trelloplus.service;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import utils.Helper;
 
-
-
-
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.models.Comment;
 import com.paw.trelloplus.views.LoginView;
-import com.paw.trelloplus.views.TasksView;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.Compare;
@@ -30,7 +26,7 @@ public class TaskService extends AbstractService {
 
 	private SQLContainer tasksContainer;
 	private Task task;
-	private SQLContainer commentsContainer;
+	private SQLContainer commentsContainer, markedTaskByIdContainer;
 	private final static Logger logger = Logger.getLogger(TaskService.class.getName());
 	
 	public TaskService() {
@@ -50,7 +46,7 @@ public class TaskService extends AbstractService {
 		tasksContainer.commit();
 		return true;
 	}
-	public Task addTask(String listId, String title, String description)
+	public Task addTask(String listId, String title, String description, String marked)
 			throws UnsupportedOperationException, SQLException {
 
 		Object rowId = tasksContainer.addItem();
@@ -58,6 +54,7 @@ public class TaskService extends AbstractService {
 		rowItem.getItemProperty("id_list").setValue(Integer.parseInt(listId));	
 		rowItem.getItemProperty("name").setValue(title);
 		rowItem.getItemProperty("description").setValue(description);
+		rowItem.getItemProperty("marked").setValue(0);
 		tasksContainer.commit();
 		
 		Connection conn = connectionPool.reserveConnection();
@@ -70,9 +67,33 @@ public class TaskService extends AbstractService {
         
         
 		String newId = (String)(((RowId)tasksContainer.lastItemId()).getId()[0]+"");
-		Task t = new Task(newId, title, description, listId);
+		Task t = new Task(newId, title, description, listId, marked);
 	
 		return t;
+	}
+	
+	public void editMarkedTask(String idTask, String marked) throws SQLException
+	{
+		Connection conn = connectionPool.reserveConnection();
+        Statement statement = conn.createStatement();
+        statement.executeUpdate("update tasks set marked = '" + marked + "' where id = '" + idTask + "'");
+        statement.close();
+        conn.commit(); 
+        
+	}
+	
+	public String getMarkedTaskById(String idTask) throws SQLException
+	{
+		
+		
+		FreeformQuery q2 = new FreeformQuery("select marked from tasks where id = " + idTask, connectionPool);
+		markedTaskByIdContainer = new SQLContainer(q2);
+		
+		Object id = markedTaskByIdContainer.getIdByIndex(0);
+		Item item = markedTaskByIdContainer.getItem(id);
+		Property marked = item.getItemProperty("marked");
+		return marked.getValue().toString();
+	
 	}
 
 	public ArrayList<Task> getAllTask() throws SQLException {
@@ -86,10 +107,12 @@ public class TaskService extends AbstractService {
 			Property id_list = item.getItemProperty("id_list");
 			Property name = item.getItemProperty("name");
 			Property desc = item.getItemProperty("description");
+			Property marked = item.getItemProperty("marked");
 			Task task = new Task(task_id.getValue().toString(),
 					name.getValue().toString(),
 					desc.getValue().toString(),
-					id_list.getValue().toString());
+					id_list.getValue().toString(),
+					marked.getValue().toString());
 
 			listAllTasks.add(task);
 		}

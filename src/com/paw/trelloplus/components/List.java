@@ -99,7 +99,7 @@ public class List extends VerticalLayout  {
 				Task newTask = null;
 				try {
 					newTask = taskService.addTask(getId_list(),
-							title.getValue(), descriptionArea.getValue());
+							title.getValue(), descriptionArea.getValue(), "0");
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
 				}

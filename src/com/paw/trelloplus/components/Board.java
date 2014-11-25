@@ -13,9 +13,11 @@ public class Board extends CustomComponent{
 	private static final long serialVersionUID = -8769513290840624388L;
 	private String name;
 	private String boardId;
+	private int marked;
 
 	public Board(String title)
 	{
+		
 		this.setStyleName("board");
 		
 		HorizontalLayout l1 = new HorizontalLayout();
@@ -44,4 +46,14 @@ public class Board extends CustomComponent{
 	{
 		return this.boardId;
 	}
+
+	public int getMarked() {
+		return marked;
+	}
+
+	public void setMarked(int marked) {
+		this.marked = marked;
+	}
+	
+	
 }
