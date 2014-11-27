@@ -37,6 +37,13 @@ body{
 	margin:2px auto 2px auto;
 	padding:0 2px 0 2px;
 }
+.task .v-verticallayout{
+	width:100%;	
+}
+.task .v-label{
+	width:100%;
+	word-wrap: break-word;
+}
 
 .list{
 	width: 230px !important;

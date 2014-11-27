@@ -36,6 +36,12 @@ public class User implements Serializable{
 		return login;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof User)) return false;
+		User that = (User) obj;
+		return that.getId().equals(this.getId());
+	}
 	
 
 

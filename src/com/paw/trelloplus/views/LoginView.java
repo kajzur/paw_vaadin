@@ -89,7 +89,6 @@ public class LoginView extends CustomComponent implements View,
 					getUI().getNavigator().navigateTo(TasksView.NAME);
 					
 					ID_USER = authorizationService.getUserId(username);
-					logger.log(Level.SEVERE, ID_USER);
 			
 			
 

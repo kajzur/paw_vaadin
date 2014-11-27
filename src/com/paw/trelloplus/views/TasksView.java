@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import utils.ListDropHandler;
+
+
 
 
 import com.paw.trelloplus.components.Board;
@@ -18,6 +19,7 @@ import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.service.ListService;
 import com.paw.trelloplus.service.OrganizationService;
 import com.paw.trelloplus.service.TaskService;
+import com.paw.trelloplus.utils.ListDropHandler;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;

@@ -2,31 +2,22 @@ package com.paw.trelloplus.components;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import utils.CommentsButtonHandler;
-
-import com.google.gwt.user.server.rpc.core.java.util.Arrays;
 import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.service.AuthorizationService;
-import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.service.TaskService;
+import com.paw.trelloplus.utils.CommentsButtonHandler;
 import com.paw.trelloplus.views.TasksView;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.OptionGroup;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.Button.ClickEvent;
 
 public class Task extends CustomComponent {
 
@@ -90,7 +81,6 @@ public class Task extends CustomComponent {
 				try {
 					m = taskService.getMarkedTaskById(task_id);
 					
-					Notification.show(m);
 					
 					if(m.equals("0"))
 					{
@@ -141,92 +131,97 @@ public class Task extends CustomComponent {
 		
 		ht.addComponent(addLabelForTask);
 		ht.addComponent(addUser);
-
+		
+		ht.addComponent(getCommentButton("..."));
+		
+		
 		vt.addComponent(l1);
 		vt.addComponent(l2);
-		vt.addComponent(ht);
-		vt.addComponent(getCommentButton("..."));
+
 		ArrayList<User> users = authorizationService.getUsersByTask(getTask_id());
 		
 		for(User user : users)
 		{
 			vt.addComponent(new Label(user.getLogin()));
 		}
-
+		vt.addComponent(ht);
 		setCompositionRoot(vt);
 
 	}
 	
 	private void prepareWindow() throws SQLException{
-        final VerticalLayout vl = new VerticalLayout();
-        ArrayList<User> users = authorizationService.getAllUsers();
-        ArrayList<User> selectedUsers = authorizationService.getUsersByTask(getTask_id());
-        for(User u : users)
-        {
-                CheckBox checkbox1 = new CheckBox(u.getLogin(), (selectedUsers.contains(u)));
-                checkbox1.setData(u);
-                vl.addComponent(checkbox1);
-        }
+		 final VerticalLayout vl = new VerticalLayout();
+		 ArrayList<User> users = authorizationService.getAllUsers();
+		 ArrayList<User> selectedUsers = authorizationService.getUsersByTask(getTask_id());
+		 for(User u : users)
+		 {
+			 CheckBox checkbox1 = new CheckBox(u.getLogin(), (selectedUsers.contains(u)));
+			 checkbox1.setData(u);
+			 vl.addComponent(checkbox1);
+		 }
 
-    Button save = new Button("Zapisz");
-        save.setSizeFull();
-        save.addClickListener(new Button.ClickListener() {
+	     Button save = new Button("Zapisz");
+		 save.setSizeFull();
+		 save.addClickListener(new Button.ClickListener() {
 
-               @Override
-               public void buttonClick(ClickEvent event) {
-              
-                       try {
-                               authorizationService.deleteUserByTask(getTask_id());
-                               for(Component userCheckBox : vl)
-                               {
-                                              
-                                               if(userCheckBox instanceof CheckBox)
-                                               {
-                                                       CheckBox temp = (CheckBox) userCheckBox;
-                                                      
-                                                       if(temp.getValue()){
-                                                               User user = (User)temp.getData();
-                                                               authorizationService.addUserByTask(user, getTask_id());
-                                                       }
-                                               }
-                               }
-                               addUserWindow.close();
-                               ArrayList<User> users;
-                               users = authorizationService.getUsersByTask(getTask_id());
-                               vt.removeAllComponents();
-                               vt.addComponent(new Label(title));
-                               vt.addComponent(new Label(desc));
-                               vt.addComponent(addUser);
-                               vt.addComponent(getCommentButton("..."));
-                               for(User u : users)
-                               {
-                                       vt.addComponent(new Label(u.getLogin()));
-                               }
-                              
-                       } catch (SQLException e1) {
-                               e1.printStackTrace();
-                       }
-               }
-       });
+			@Override
+			public void buttonClick(ClickEvent event) {
+			
+				try {
+					authorizationService.deleteUserByTask(getTask_id());
+					for(Component userCheckBox : vl)
+					{
+							
+							if(userCheckBox instanceof CheckBox)
+							{
+								CheckBox temp = (CheckBox) userCheckBox;
+								
+								if(temp.getValue()){
+									User user = (User)temp.getData();
+									authorizationService.addUserByTask(user, getTask_id());
+								}
+							}
+					}
+					addUserWindow.close();
+					ArrayList<User> users;
+					users = authorizationService.getUsersByTask(getTask_id());
+					vt.removeAllComponents();
+					vt.addComponent(new Label(title));
+					vt.addComponent(new Label(desc));
+					ht.removeAllComponents();
+					ht.addComponent(addLabelForTask);
+					ht.addComponent(addUser);
+					ht.addComponent(getCommentButton("..."));
+					
+					for(User u : users)
+					{
+						vt.addComponent(new Label(u.getLogin()));
+					}
+					vt.addComponent(ht);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 
-       Button cancel = new Button("Anuluj");
-       cancel.setSizeFull();
-       cancel.addClickListener(new Button.ClickListener() {
+		Button cancel = new Button("Anuluj");
+		cancel.setSizeFull();
+		cancel.addClickListener(new Button.ClickListener() {
 
-               @Override
-               public void buttonClick(ClickEvent event) {
+			@Override
+			public void buttonClick(ClickEvent event) {
 
-                       addUserWindow.close();
-               }
-       });
-       HorizontalLayout buttonGroupLayout = new HorizontalLayout();
-       buttonGroupLayout.setSizeFull();
-       buttonGroupLayout.addComponent(save);
-       buttonGroupLayout.addComponent(cancel);
-      
-   vl.addComponent(buttonGroupLayout);
-   addUserWindow.setContent(vl);
-       }
+				addUserWindow.close();
+			}
+		});
+		HorizontalLayout buttonGroupLayout = new HorizontalLayout();
+		buttonGroupLayout.setSizeFull();
+		buttonGroupLayout.addComponent(save);
+		buttonGroupLayout.addComponent(cancel);
+		
+	    vl.addComponent(buttonGroupLayout);
+	    addUserWindow.setContent(vl);
+		}
 
 	public String getId_list() {
 		return id_list;

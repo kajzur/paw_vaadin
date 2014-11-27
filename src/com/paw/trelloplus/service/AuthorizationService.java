@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.models.User;
 import com.vaadin.data.Container;
@@ -96,8 +99,7 @@ public class AuthorizationService extends AbstractService {
 		Property userId = item.getItemProperty("id");
 		return userId.getValue().toString();
 	}
-	
-	
+
 	public boolean checkUserCredentials(String user, String password) {
 
 		try {

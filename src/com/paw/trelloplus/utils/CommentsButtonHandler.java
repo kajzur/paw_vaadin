@@ -1,4 +1,4 @@
-package utils;
+package com.paw.trelloplus.utils;
 
 import java.util.ArrayList;
 

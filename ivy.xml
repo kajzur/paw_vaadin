@@ -29,6 +29,7 @@
 		<!-- Servlet 3.0 API -->
 		<dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" conf="nodeploy->default" />
  
+ 
  		<!-- jdbc mysql -->
  		<dependency org="mysql" name="mysql-connector-java" rev="5.1.6"/>
 
@@ -41,7 +42,9 @@
 		<!-- Vaadin client side, needed for widget set compilation -->
 		<dependency org="com.vaadin" name="vaadin-client" rev="&vaadin.version;"
 			 conf="widgetset-compile->default" />
-
+		<!-- testbench addon -->
+		<dependency org="com.vaadin" name="vaadin-testbench-api"
+		   rev="latest.release" conf="nodeploy->default"/>
 		<!-- Compiler for custom widget sets. Should not be deployed -->
 		<dependency org="com.vaadin" name="vaadin-client-compiler"
 			rev="&vaadin.version;" conf="widgetset-compile->default" />

@@ -31,7 +31,6 @@ public class BoardService extends AbstractService {
 			TableQuery q1 = new TableQuery("boards", connectionPool);
 			q1.setVersionColumn("VERSION");
 			boardContainer = new SQLContainer(q1);
-			logger.log(Level.SEVERE, LoginView.ID_USER);
 			FreeformQuery q2 = new FreeformQuery("SELECT b.id, b.name from boards_users bu join boards b on bu.id_board = b.id WHERE id_user = 11", connectionPool);
 			boardsByUserContainer = new SQLContainer(q2);
 		} catch (SQLException e) {

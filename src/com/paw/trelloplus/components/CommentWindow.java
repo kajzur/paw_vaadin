@@ -2,9 +2,8 @@ package com.paw.trelloplus.components;
 
 import java.util.ArrayList;
 
-import utils.SaveCommentClickButtonHandler;
-
 import com.paw.trelloplus.models.Comment;
+import com.paw.trelloplus.utils.SaveCommentClickButtonHandler;
 import com.paw.trelloplus.views.LoginView;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Button;

@@ -1,4 +1,4 @@
-package utils;
+package com.paw.trelloplus.utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

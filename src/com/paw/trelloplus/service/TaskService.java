@@ -9,10 +9,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import utils.Helper;
-
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.models.Comment;
+import com.paw.trelloplus.utils.Helper;
 import com.paw.trelloplus.views.LoginView;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;

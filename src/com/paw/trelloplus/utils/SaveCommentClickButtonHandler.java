@@ -1,4 +1,4 @@
-package utils;
+package com.paw.trelloplus.utils;
 
 import com.mysql.jdbc.Connection;
 import com.paw.trelloplus.components.CommentWindow;
