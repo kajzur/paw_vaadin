@@ -3,18 +3,12 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 25 Lis 2014, 21:04
+-- Generation Time: 29 Lis 2014, 21:34
 -- Server version: 5.5.36
 -- PHP Version: 5.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `trello_plus`
@@ -31,18 +25,19 @@ CREATE TABLE IF NOT EXISTS `boards` (
   `name` varchar(255) NOT NULL,
   `marked` int(255) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+  UNIQUE KEY `id` (`id`),
+  KEY `id_2` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
 -- Zrzut danych tabeli `boards`
 --
 
 INSERT INTO `boards` (`id`, `name`, `marked`) VALUES
-(2, 'tabliczka Paskudkowa', 0),
-(3, 'taaaablicaaaa A', 0),
-(5, 'mojaTablica', 0),
-(6, 'tab', 0);
+(3, 'Tablica A', 1),
+(5, 'Tablica B', 0),
+(6, 'Tablica C', 1),
+(7, 'a', 1);
 
 -- --------------------------------------------------------
 
@@ -66,7 +61,7 @@ INSERT INTO `boards_organizations` (`id_board`, `id_organization`) VALUES
 (3, 3),
 (2, 1),
 (2, 2),
-(6, 1);
+(6, 3);
 
 -- --------------------------------------------------------
 
@@ -99,19 +94,21 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `id_list` int(255) NOT NULL AUTO_INCREMENT,
   `id_board` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  PRIMARY KEY (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=62 ;
+  PRIMARY KEY (`id_list`),
+  KEY `id_list` (`id_list`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=68 ;
 
 --
 -- Zrzut danych tabeli `lists`
 --
 
 INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
-(55, 3, 'nowa Lista'),
-(56, 2, 'nowa Lista druga'),
-(58, 3, 'listaaAAAA'),
-(60, 2, 'lista11'),
-(61, 6, 'nowaLista');
+(62, 5, 'Lista 1'),
+(63, 5, 'Lista 2'),
+(64, 3, 'Lista 3'),
+(65, 3, 'Lista 4'),
+(66, 6, 'Lista 5'),
+(67, 6, 'Lista 6');
 
 -- --------------------------------------------------------
 
@@ -122,8 +119,9 @@ INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
 CREATE TABLE IF NOT EXISTS `organizations` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Zrzut danych tabeli `organizations`
@@ -132,7 +130,8 @@ CREATE TABLE IF NOT EXISTS `organizations` (
 INSERT INTO `organizations` (`id`, `name`) VALUES
 (1, 'organizacja'),
 (2, 'organizacja2'),
-(3, 'organizacja3');
+(3, 'organizacja3'),
+(4, 'organizacja 5');
 
 -- --------------------------------------------------------
 
@@ -146,22 +145,21 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `name` text COLLATE utf8_unicode_ci NOT NULL,
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `marked` int(255) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=88 ;
+  `lp` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`),
+  KEY `id_list` (`id_list`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=101 ;
 
 --
 -- Zrzut danych tabeli `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`) VALUES
-(75, 58, 'Nowe zadanie', 'I jego opis', 0),
-(76, 56, 'zadanko ', 'disis', 0),
-(79, 58, 'tytulLLLLL', 'opisSSSSS', 0),
-(80, 55, 'kolejny task', 'wykonac', 0),
-(84, 58, 't27', 'o27', 0),
-(85, 55, 't27', 'o27', 0),
-(86, 60, 'tytul t', 'opis o', 0),
-(87, 61, 'task', 'description', 0);
+INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`) VALUES
+(97, 62, 'name', 'desc', 0, 0),
+(98, 63, 'name', 'desc', 0, 2),
+(99, 62, '22', '22', 0, 1),
+(100, 62, '33', '33', 0, 3);
 
 -- --------------------------------------------------------
 
@@ -173,24 +171,6 @@ CREATE TABLE IF NOT EXISTS `tasks_users` (
   `id_task` int(11) NOT NULL,
   `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
---
--- Zrzut danych tabeli `tasks_users`
---
-
-INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
-(77, 11),
-(78, 11),
-(87, 11),
-(79, 17),
-(85, 16),
-(80, 14),
-(75, 13),
-(76, 17),
-(87, 11),
-(86, 11),
-(86, 12),
-(86, 13);
 
 -- --------------------------------------------------------
 
@@ -205,29 +185,20 @@ CREATE TABLE IF NOT EXISTS `task_comments` (
   `user_id` int(11) NOT NULL,
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=23 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
 
 --
 -- Zrzut danych tabeli `task_comments`
 --
 
 INSERT INTO `task_comments` (`id`, `task_id`, `created`, `user_id`, `content`) VALUES
-(1, 65, '2014-11-20 19:21:05', 11, 'testowy content'),
-(8, 65, '2014-11-20 21:09:45', 11, 'nwy'),
-(9, 65, '2014-11-20 21:12:36', 11, 'fsfsdf'),
-(10, 65, '2014-11-20 21:15:48', 11, 'sdsd'),
-(11, 65, '2014-11-20 21:19:39', 11, 'sdsd'),
-(12, 65, '2014-11-20 21:19:40', 11, 'sdsdsads'),
-(13, 65, '2014-11-20 21:19:41', 11, 'sdsdsads'),
-(14, 65, '2014-11-20 21:19:41', 11, 'sdsdsads'),
-(15, 65, '2014-11-20 21:19:42', 11, 'sdsdsads'),
-(16, 63, '2014-11-20 21:22:40', 11, 'pierwszy'),
-(17, 69, '2014-11-20 21:40:43', 11, 'aa'),
-(18, 60, '2014-11-20 22:14:39', 11, 'brum\n'),
-(19, 71, '2014-11-23 00:04:26', 11, 'dasd'),
-(20, 71, '2014-11-23 00:04:27', 11, 'dasdadasdas'),
-(21, 71, '2014-11-23 00:04:29', 11, 'dsad'),
-(22, 86, '2014-11-25 20:52:48', 11, 'komentt');
+(1, 92, '2014-11-27 15:16:45', 11, 'komentarz'),
+(2, 92, '2014-11-27 15:16:52', 11, 'komentarz2'),
+(3, 92, '2014-11-27 16:17:43', 11, 'ffffff'),
+(4, 89, '2014-11-29 14:26:28', 11, 'ddddd'),
+(5, 89, '2014-11-29 14:26:38', 11, 'kakakakakaka'),
+(6, 89, '2014-11-29 14:26:46', 11, 'ujdiwkea'),
+(7, 88, '2014-11-29 14:27:06', 11, 'dddddeddd');
 
 -- --------------------------------------------------------
 
@@ -239,7 +210,8 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `login` varchar(16) COLLATE utf8_unicode_ci NOT NULL,
   `password` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=18 ;
 
 --
@@ -276,8 +248,4 @@ INSERT INTO `users_organizations` (`id_user`, `id_organization`) VALUES
 (11, 3),
 (2, 1),
 (2, 2),
-(6, 1);
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+(6, 3);

@@ -1,28 +1,28 @@
 package com.paw.trelloplus.service;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import com.paw.trelloplus.components.List;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.models.Comment;
-import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.utils.Helper;
 import com.paw.trelloplus.views.LoginView;
-import com.paw.trelloplus.views.TasksView;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.data.util.sqlcontainer.RowId;
-import com.vaadin.data.util.sqlcontainer.SQLContainer;
-import com.vaadin.data.util.sqlcontainer.query.FreeformQuery;
-import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HasComponents;
+
+import fi.jasoft.dragdroplayouts.DDVerticalLayout;
 
 public class TaskService extends AbstractService {
 
@@ -34,7 +34,7 @@ public class TaskService extends AbstractService {
 		super();
 	}
 	
-	public boolean moveTask(String taskId, int newListId) throws UnsupportedOperationException, SQLException {
+	public boolean moveTaskToOtherList(String taskId, int newListId) throws UnsupportedOperationException, SQLException {
 		String sql = "select * from tasks where id = ?";
 		PreparedStatement statement = connection.prepareStatement(sql);
 		statement.setString(1, taskId);
@@ -58,11 +58,12 @@ public class TaskService extends AbstractService {
 	public Task addTask(String listId, String title, String description, String marked)
 			throws UnsupportedOperationException, SQLException {
 
-		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?, 0)";
+		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0))";
 	    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    statement.setString(1, listId);
 	    statement.setString(2, title);
 	    statement.setString(3, description);
+	    statement.setString(4, listId);
 	    statement.executeUpdate();
 	    ResultSet rs = statement.getGeneratedKeys();
 		int id = 0;
@@ -113,7 +114,7 @@ public class TaskService extends AbstractService {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
-		String sql = "SELECT * from tasks";
+		String sql = "SELECT * from tasks order by lp ASC";
 		PreparedStatement statement =  connection.prepareStatement(sql);
 		ResultSet rs = statement.executeQuery();
 		while(rs.next()) 
@@ -157,6 +158,44 @@ public class TaskService extends AbstractService {
 			return -1;
 		}
 		
+		
+		
+	}
+
+	private String prepareSql(ArrayList<String> ids, Map<String, Integer> taskLpMap, int list){
+		String partSql = Helper.taskIdLpMapToSqlString(taskLpMap);
+		String idsString = StringUtils.join(ids, ",");
+		
+		String sql = "UPDATE tasks SET lp = (CASE id "+partSql+" END) WHERE id IN ("+idsString+") and id_list="+list;
+		Logger.getGlobal().log(Level.SEVERE, sql);
+		return sql;
+	}
+	
+	public void moveTask(String task_id, int targetListId, HasComponents hasComponents) {
+		 
+		DDVerticalLayout ddv = (DDVerticalLayout)hasComponents;
+		int compCount = ddv.getComponentCount();
+		Map<String, Integer> taskLpMap = new LinkedHashMap<String, Integer>();
+		ArrayList<String> ids = new ArrayList<String>();
+		for(int i=0;i<compCount;i++)
+		{
+			Component c = ddv.getComponent(i);
+			if(c instanceof Task){
+				Task t = (Task)c;
+				taskLpMap.put(t.getTask_id(), ddv.getComponentIndex(t));
+				ids.add(t.getTask_id());
+			}
+		}
+		
+		
+		try {
+			Statement s = connection.createStatement();
+			s.executeUpdate(prepareSql(ids, taskLpMap,targetListId));
+			connection.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}

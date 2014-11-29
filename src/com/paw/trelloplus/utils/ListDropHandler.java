@@ -74,7 +74,7 @@ public class ListDropHandler implements DropHandler{
         
 		final int targetListId = Integer.parseInt( targetList.getId_list() );
 		try {
-			taskService.moveTask(t.getTask_id(), targetListId);
+			
 			List targetListObj = (List)CollectionUtils.find(allLists, new Predicate() {
 				@Override
 				public boolean evaluate(Object object) {
@@ -88,9 +88,11 @@ public class ListDropHandler implements DropHandler{
 				oldList.removeComponent(t);
 				targetListObj.getTaskContainer().addComponent(t, newIndex);
 				Logger.getGlobal().log(Level.SEVERE, "wstawiam pod: "+newIndex);
+				taskService.moveTask(t.getTask_id(), targetListId, t.getParent());
 			}else{
 				oldList.removeComponent(t);
 				targetListObj.getTaskContainer().addComponent(t);
+				taskService.moveTaskToOtherList(t.getTask_id(), targetListId);
 			}
 			
 		} catch (UnsupportedOperationException | SQLException e) {
