@@ -25,8 +25,7 @@ public class SaveCommentClickButtonHandler implements ClickListener {
 
 	@Override
 	public void buttonClick(ClickEvent event) {
-		ts.setTask(task);
-		int isSuccess = ts.addCommentToCurrentTask(textArea.getValue() );
+		int isSuccess = ts.addCommentToCurrentTask(textArea.getValue(), task.getTask_id());
 		if(isSuccess > -1){
 			CommentWindow cw = (CommentWindow)textArea.getParent().getParent().getParent();
 			cw.addComment(textArea.getValue(),"Ty", isSuccess, task.getTask_id(), Helper.getCurrentDateAsString());

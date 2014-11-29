@@ -19,11 +19,6 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 
 public class AuthorizationService extends AbstractService {
 
-	/**
-	 * 
-	 */
-
-//	private SQLContainer usersContainer;
 	private final static Logger logger = Logger.getLogger(AuthorizationService.class.getName());
 
 	public AuthorizationService() {
@@ -121,21 +116,6 @@ public class AuthorizationService extends AbstractService {
 		}
 
 		return sb.toString();
-	}
-
-	@Override
-	protected void initContainers() {
-//		try {
-//
-//			TableQuery q2 = new TableQuery("users", connectionPool);
-//			q2.setVersionColumn("VERSION");
-//			usersContainer = new SQLContainer(q2);
-//			
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-
 	}
 
 }

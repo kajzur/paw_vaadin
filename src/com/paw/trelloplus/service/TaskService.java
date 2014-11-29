@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.models.Comment;
@@ -122,36 +121,6 @@ public class TaskService extends AbstractService {
 			listAllTasks.add(new Task(rs.getString("id"), rs.getString("name"),rs.getString("description"),rs.getString("id_list"),rs.getString("marked")));
 		}
 		return listAllTasks;
-
-	}
-
-	@Override
-	protected void initContainers() {
-		try {
-			TableQuery q1 = new TableQuery("tasks", connectionPool);
-			q1.setVersionColumn("VERSION");
-			tasksContainer = new SQLContainer(q1);
-			if(getTask()!=null)
-			{
-				FreeformQuery q2 = new FreeformQuery("SELECT tc.id, tc.content, tc.created, u.login as usermail, tc.task_id FROM task_comments tc "
-					+ " LEFT JOIN users u on u.id=tc.user_id WHERE tc.task_id="+getTask().getTask_id()+" and user_id="+LoginView.ID_USER, connectionPool);
-				commentsContainer = new SQLContainer(q2);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-	}
-	
-	public void setTask(Task t){
-		task = t;
-		initContainers();
-	}
-	
-	public Task getTask() {
-		
-		return task;
 	}
 	
 	public ArrayList<Comment> getCommentsToTaskByCurrentTask(String id_task) throws SQLException {
@@ -172,11 +141,11 @@ public class TaskService extends AbstractService {
 		return comments;
 	}
 
-	public int addCommentToCurrentTask(String value) {
+	public int addCommentToCurrentTask(String value, String task_id) {
 		
 		try {
 			PreparedStatement s = connection.prepareStatement("INSERT INTO task_comments VALUES(NULL,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			s.setInt(1, Integer.parseInt(getTask().getTask_id()));
+			s.setString(1, task_id);
 			s.setString(2, Helper.getCurrentDateAsString());
 			s.setInt(3, Integer.parseInt(LoginView.ID_USER));
 			s.setString(4, value);

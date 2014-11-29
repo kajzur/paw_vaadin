@@ -33,21 +33,6 @@ public class OrganizationService extends AbstractService {
 		super();
 	}
 
-	@Override
-	protected void initContainers() {
-
-//		try {
-//			TableQuery q1 = new TableQuery("organizations", connectionPool);
-//			q1.setVersionColumn("VERSION");
-//			organizationContainer = new SQLContainer(q1);
-//
-//		} catch (SQLException e) {
-//
-//			e.printStackTrace();
-//		}
-
-	}
-
 	public void addNewOrganization(String name) throws UnsupportedOperationException, SQLException {
 	
 		 String sql ="INSERT INTO organizations values(NUll, ?)";

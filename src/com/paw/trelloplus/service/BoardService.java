@@ -21,25 +21,7 @@ import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 
 public class BoardService extends AbstractService {
 	
-	
-	private SQLContainer boardContainer, boardsByUserContainer, markedBoardByIdContainer;
 	private final static Logger logger = Logger.getLogger(BoardService.class.getName());
-
-	@Override
-	public void initContainers()
-	{
-		
-		try {
-			TableQuery q1 = new TableQuery("boards", connectionPool);
-			q1.setVersionColumn("VERSION");
-			boardContainer = new SQLContainer(q1);
-			FreeformQuery q2 = new FreeformQuery("SELECT b.id, b.name from boards_users bu join boards b on bu.id_board = b.id WHERE id_user = 11", connectionPool);
-			boardsByUserContainer = new SQLContainer(q2);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	public Board addNew(String name) throws UnsupportedOperationException, SQLException {
 		
@@ -66,7 +48,6 @@ public class BoardService extends AbstractService {
 	
 	public ArrayList<Board> getAllBoard() throws SQLException 
 	{
-		//ca³y czas wyœwietla te same wartoœci, jak baza siê zmieni i to wywo³am nadal daje te pocz¹tkowe
 		ArrayList<Board> boards = new ArrayList<Board>();
 		
 		String sql = "SELECT * FROM boards ORDER BY marked DESC";
@@ -83,46 +64,27 @@ public class BoardService extends AbstractService {
 		statement.close();
 		rs.close();
 		return boards;
-//		ArrayList<Board> boards = new ArrayList<Board>();
-//		
-//		FreeformQuery q2 = new FreeformQuery("SELECT * FROM boards ORDER BY marked DESC", connectionPool);
-//		boardsByUserContainer = new SQLContainer(q2);
-//		
-//		for (int i = 0; i < boardsByUserContainer.size(); i++) {
-//			Object id = boardsByUserContainer.getIdByIndex(i);
-//			Item item = boardsByUserContainer.getItem(id);
-//			Property id_board = item.getItemProperty("id");
-//			Property name = item.getItemProperty("name");
-//			Property marked = item.getItemProperty("marked");
-//			Board board = new Board(id_board.getValue().toString(),name.getValue().toString(),(int) marked.getValue());
-//			board.setName((String) name.getValue()); //?
-//			board.setBoardId(id_board.getValue().toString());
-//			board.setMarked(Integer.parseInt(marked.getValue().toString()));
-//			boards.add(board);
-//		}
-//		
-//		return boards;
 	}
 	
 	public String getMarkedBoardById(String idBoard) throws SQLException
 	{
-		FreeformQuery q2 = new FreeformQuery("select marked from boards where id = " + idBoard, connectionPool);
-		markedBoardByIdContainer = new SQLContainer(q2);
-		
-		Object id = markedBoardByIdContainer.getIdByIndex(0);
-		Item item = markedBoardByIdContainer.getItem(id);
-		Property marked = item.getItemProperty("marked");
-		
-		return marked.getValue().toString();
+		String sql = "select marked from boards where id =?";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, idBoard);
+		ResultSet rs = statement.executeQuery();
+		if(rs.next())
+		{
+			return rs.getString("marked");
+		}
+		return null;
 	}
 	
 	public void editMarkedBoard(String idBoard, String marked) throws SQLException
 	{
-		Connection conn = connectionPool.reserveConnection();
-		Statement statement = conn.createStatement();
+		Statement statement = connection.createStatement();
 		statement.executeUpdate("update boards set marked = '" + marked + "' where id = '" + idBoard + "'");
 		statement.close();
-		conn.commit();
+		connection.commit();
 	}
 
 }

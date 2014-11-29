@@ -5,7 +5,6 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
@@ -13,12 +12,9 @@ import com.vaadin.data.util.sqlcontainer.query.TableQuery;
 
 public class RegistrationService extends AbstractService {
 
-	private SQLContainer usersContainer;
-
 	public RegistrationService() {
 		super();
-		// TODO Auto-generated constructor stub
-	}
+		}
 	
 	public void addUser(String name, String password) throws UnsupportedOperationException, SQLException, ReadOnlyException, NoSuchAlgorithmException {
 		
@@ -32,8 +28,7 @@ public class RegistrationService extends AbstractService {
 
 	}
 
-	private String getHashedPassword(String password)
-			throws NoSuchAlgorithmException {
+	private String getHashedPassword(String password)throws NoSuchAlgorithmException {
 
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		md.update(password.getBytes());
@@ -47,20 +42,6 @@ public class RegistrationService extends AbstractService {
 		}
 
 		return sb.toString();
-	}
-
-	@Override
-	protected void initContainers() {
-//		try {
-//
-//			TableQuery q2 = new TableQuery("users", connectionPool);
-//			q2.setVersionColumn("VERSION");
-//			usersContainer = new SQLContainer(q2);
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//		}
-
 	}
 
 }

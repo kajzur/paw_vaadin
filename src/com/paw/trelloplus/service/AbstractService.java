@@ -14,7 +14,6 @@ public abstract class AbstractService implements Serializable {
 	public AbstractService() {
 		if(connectionPool==null || connection == null)
 			connect();
-		initContainers();
 
 	}
 	private void connect(){
@@ -29,5 +28,4 @@ public abstract class AbstractService implements Serializable {
 			e.printStackTrace();
 		}
 	}
-	protected abstract void initContainers();
 }

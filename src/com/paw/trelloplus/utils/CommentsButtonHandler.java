@@ -32,7 +32,6 @@ public class CommentsButtonHandler implements ClickListener {
 	private void showWindow(){
 
 		cw = new CommentWindow(task);
-		ts.setTask(task);
 		ArrayList<Comment> comments;
 		try {
 			comments = ts.getCommentsToTaskByCurrentTask(task.getTask_id());

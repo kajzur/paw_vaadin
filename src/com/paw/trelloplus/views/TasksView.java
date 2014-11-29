@@ -159,7 +159,7 @@ public class TasksView extends VerticalLayout implements View {
 					Notification.show("Dodano..");
 					chooseBoards.addItem(titleBoard.getValue(), menuCommand);
 					chooseBoards.addSeparator();
-					boardService.initContainers();
+	//				boardService.initContainers();
 					boards = boardService.getAllBoard();
 				} catch (UnsupportedOperationException | SQLException e) {
 					// TODO Auto-generated catch block

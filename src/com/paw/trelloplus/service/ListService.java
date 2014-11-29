@@ -23,7 +23,6 @@ public class ListService extends AbstractService  {
 	 * 
 	 */
 	private static final long serialVersionUID = -7234308085879341017L;
-
 	
 	private final static Logger logger = Logger.getLogger(ListService.class.getName());
 	
@@ -61,23 +60,6 @@ public class ListService extends AbstractService  {
 			lists.add(new List(rs.getString("id_list"), rs.getString("id_board"),rs.getString("name")));
 		}
 		return lists;
-	}
-
-
-	
-	@Override
-	protected void initContainers()
-	{
-		
-//		try {
-//			TableQuery q1 = new TableQuery("lists", connectionPool);
-//			q1.setVersionColumn("VERSION");
-//			listsContainer = new SQLContainer(q1);
-//			
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 	}
 
 }
