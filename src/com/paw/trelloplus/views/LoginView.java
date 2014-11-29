@@ -79,25 +79,28 @@ public class LoginView extends CustomComponent implements View,
 				String username = user.getValue();
 				String password1 = password.getValue();
 
-				boolean isValid = authorizationService.checkUserCredentials(
-						username, password1);
+				boolean isValid;
+				try {
+					isValid = authorizationService.checkUserCredentials(
+							username, password1);
+					if (isValid) {
 
-				if (isValid) {
+						getSession().setAttribute("user", username);
+						getSession().setAttribute("id", authorizationService.getUserId(username));
+						getUI().getNavigator().navigateTo(TasksView.NAME);
+						
+						ID_USER = authorizationService.getUserId(username);
+					} else {
 
-					getSession().setAttribute("user", username);
-					getSession().setAttribute("id", authorizationService.getUserId(username));
-					getUI().getNavigator().navigateTo(TasksView.NAME);
-					
-					ID_USER = authorizationService.getUserId(username);
-			
-			
+						password.setValue(null);
+						password.focus();
 
-				} else {
-
-					password.setValue(null);
-					password.focus();
-
+					}
+				} catch (NoSuchAlgorithmException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
+				
 			}
 		});
 		signinButton = new Button("Zarejestruj", new Button.ClickListener() {

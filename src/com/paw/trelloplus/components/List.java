@@ -43,7 +43,10 @@ public class List extends VerticalLayout  {
 		else
 		super.addComponent(c);
 	}
-	public List(String title) {
+	public List(String id_list, String id_board, String title) {
+		this.id_board = id_board;
+		this.id_list = id_list;
+		this.name = title;
 		taskService = new TaskService();
 		VerticalLayout vt = new VerticalLayout();
 		vt.addComponent(new Label(title));

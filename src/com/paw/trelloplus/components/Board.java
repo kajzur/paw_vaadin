@@ -15,13 +15,16 @@ public class Board extends CustomComponent{
 	private String boardId;
 	private int marked;
 
-	public Board(String title)
+	public Board(String boardId,String name, int marked)
 	{
+		this.name = name;
+		this.boardId = boardId;
+		this.marked = marked;
 		
 		this.setStyleName("board");
 		
 		HorizontalLayout l1 = new HorizontalLayout();
-		l1.addComponent(new Label(title));
+		l1.addComponent(new Label(name));
 		l1.setStyleName("list-header");
 		VerticalLayout vt = new VerticalLayout();
 		

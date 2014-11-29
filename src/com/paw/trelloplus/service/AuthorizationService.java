@@ -2,26 +2,20 @@ package com.paw.trelloplus.service;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.models.User;
-import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.filter.Compare;
-import com.vaadin.data.util.sqlcontainer.RowId;
 import com.vaadin.data.util.sqlcontainer.SQLContainer;
-import com.vaadin.data.util.sqlcontainer.query.FreeformQuery;
-import com.vaadin.data.util.sqlcontainer.query.TableQuery;
+
 
 public class AuthorizationService extends AbstractService {
 
@@ -29,95 +23,84 @@ public class AuthorizationService extends AbstractService {
 	 * 
 	 */
 
-	private SQLContainer usersContainer;
+//	private SQLContainer usersContainer;
 	private final static Logger logger = Logger.getLogger(AuthorizationService.class.getName());
 
 	public AuthorizationService() {
-		super();
-
-	}
+		super();}
 	
 	public void addUserByTask(User user, String id) throws SQLException
 	{
-		Connection conn = connectionPool.reserveConnection();
-        Statement statement = conn.createStatement();
+        Statement statement = connection.createStatement();
         statement.executeUpdate("INSERT INTO tasks_users values("+id+", "+user.getId()+")");
         statement.close();
-        conn.commit(); 
-	}
-	public void deleteUserByTask(String id) throws SQLException
-	{
-		Connection conn = connectionPool.reserveConnection();
-        Statement statement = conn.createStatement();
-        statement.executeUpdate("DELETE FROM tasks_users WHERE id_task ="+id);
-        statement.close();
-        conn.commit(); 
+        connection.commit(); 
 	}
 	
-	public ArrayList<User> getAllUsers()
+	public void deleteUserByTask(String id) throws SQLException
+	{
+        Statement statement = connection.createStatement();
+        statement.executeUpdate("DELETE FROM tasks_users WHERE id_task ="+id);
+        statement.close();
+        connection.commit(); 
+	}
+	
+	public ArrayList<User> getAllUsers() throws SQLException
 	{
 		ArrayList<User> users = new ArrayList<User>();
-		for (int i = 0; i < usersContainer.size(); i++) {
 		
-			Object id = usersContainer.getIdByIndex(i);
-			Item item = usersContainer.getItem(id);
-			Property user_id = item.getItemProperty("id");
-			Property name = item.getItemProperty("login");
-			User user = new User(user_id.getValue().toString(), name.getValue().toString());
-
-			users.add(user);
+		String sql = "SELECT * from users";
+		Statement statement = connection.createStatement();
+		ResultSet rs = statement.executeQuery(sql);
+		while (rs.next()) 
+		{
+			String id = rs.getString("id");
+			String name = rs.getString("login");
+			users.add(new User(id, name));
 		}
 		return users;
 	}
 	
 	public ArrayList<User> getUsersByTask(String task_id) throws SQLException
 	{
-		FreeformQuery q2 = new FreeformQuery("SELECT u.id, u.login from tasks_users tu join users u on tu.id_user = u.id WHERE id_task = "+task_id, connectionPool);
-		SQLContainer usersByTaskContainer = new SQLContainer(q2);
-		
 		ArrayList<User> users = new ArrayList<User>();
-		for (int i = 0; i < usersByTaskContainer.size(); i++) {
-		
-			Object id = usersByTaskContainer.getIdByIndex(i);
-			Item item = usersByTaskContainer.getItem(id);
-			Property user_id = item.getItemProperty("id");
-			Property name = item.getItemProperty("login");
-			User user = new User(user_id.getValue().toString(), name.getValue().toString());
-
-			users.add(user);
+		String sql = "SELECT u.id, u.login from tasks_users tu join users u on tu.id_user = u.id WHERE id_task = "+task_id;
+		Statement statement =  connection.createStatement();
+		ResultSet rs = statement.executeQuery(sql);
+		while (rs.next()) 
+		{
+			String id = rs.getString("id");
+			String name = rs.getString("login");
+			users.add(new User(id, name));
 		}
 		return users;
 	}
 	
-	public String getUserId(String username){
-		usersContainer.addContainerFilter(new Compare.Equal("login", username));
-		if (!(usersContainer.size() > 0))
-			return null;
-
-		Object id = usersContainer.getIdByIndex(0);
-		Item item = usersContainer.getItem(id);
-		Property userId = item.getItemProperty("id");
-		return userId.getValue().toString();
+	public String getUserId(String username) throws SQLException{
+		String sql = "SELECT id from users WHERE login = ?";
+		PreparedStatement statement =  connection.prepareStatement(sql);
+		statement.setString(1, username);
+		ResultSet rs = statement.executeQuery();
+		if(rs.next()) 
+		{
+			return rs.getString("id");
+		}
+		return null;
 	}
 
-	public boolean checkUserCredentials(String user, String password) {
+	public boolean checkUserCredentials(String user, String password) throws NoSuchAlgorithmException, SQLException {
+		
+		password = getHashedPassword(password);
+		String sql = "SELECT password from users WHERE login = ?";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, user);
+		ResultSet rs = statement.executeQuery();
 
-		try {
-			password = getHashedPassword(password);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-
-		usersContainer.addContainerFilter(new Compare.Equal("login", user));
-
-		if (!(usersContainer.size() > 0))
+		if (!rs.next())
 			return false;
 
-		Object id = usersContainer.getIdByIndex(0);
-		Item item = usersContainer.getItem(id);
-		Property passwordFromDB = item.getItemProperty("password");
 
-		if (password.equals(passwordFromDB.getValue()))
+		if (password.equals(rs.getString("password")))
 			return true;
 		else
 			return false;
@@ -142,16 +125,16 @@ public class AuthorizationService extends AbstractService {
 
 	@Override
 	protected void initContainers() {
-		try {
-
-			TableQuery q2 = new TableQuery("users", connectionPool);
-			q2.setVersionColumn("VERSION");
-			usersContainer = new SQLContainer(q2);
-			
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+//		try {
+//
+//			TableQuery q2 = new TableQuery("users", connectionPool);
+//			q2.setVersionColumn("VERSION");
+//			usersContainer = new SQLContainer(q2);
+//			
+//
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
 
 	}
 

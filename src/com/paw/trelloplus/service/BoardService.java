@@ -1,6 +1,7 @@
 package com.paw.trelloplus.service;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -9,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.paw.trelloplus.components.Board;
+import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.views.LoginView;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
@@ -39,44 +41,67 @@ public class BoardService extends AbstractService {
 		}
 	}
 	
-	public Board addNew(String name)
-			throws UnsupportedOperationException, SQLException {
+	public Board addNew(String name) throws UnsupportedOperationException, SQLException {
 		
-		Object rowId = boardContainer.addItem();
-		Item rowItem = boardContainer.getItem(rowId);
-		rowItem.getItemProperty("name").setValue(name);
-		rowItem.getItemProperty("marked").setValue(0);
-		boardContainer.commit();
+		String sql = "INSERT INTO boards values(NULL, ?, ?)";
+		PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+		statement.setString(1, name);
+		statement.setInt(2, 0);
+		statement.executeUpdate();
+		connection.commit();
+		ResultSet rs = statement.getGeneratedKeys();
+		int id = 0;
+		if (rs.next()){
+		    id =rs.getInt(1);
+		}
+		sql = " INSERT INTO boards_users values(?, 11)";
+		statement = connection.prepareStatement(sql);
+		statement.setInt(1, id);
+	    statement.close();
+	    connection.commit();           
 		
-		Connection conn = connectionPool.reserveConnection();
-        Statement statement = conn.createStatement();
-        statement.executeUpdate("INSERT INTO boards_users values("+(((RowId) boardContainer.lastItemId()).toString())+", 11)");
-        statement.close();
-        conn.commit();                   
-		
-		Board board = new Board(name);	
+		Board board = new Board(id+"", name, 0);	
 		return board;
 	}
 	
-	public ArrayList<Board> getAllBoard() throws SQLException {
+	public ArrayList<Board> getAllBoard() throws SQLException 
+	{
+		//ca³y czas wyœwietla te same wartoœci, jak baza siê zmieni i to wywo³am nadal daje te pocz¹tkowe
 		ArrayList<Board> boards = new ArrayList<Board>();
-		FreeformQuery q2 = new FreeformQuery("SELECT * FROM boards ORDER BY marked DESC", connectionPool);
-		boardsByUserContainer = new SQLContainer(q2);
 		
-		for (int i = 0; i < boardsByUserContainer.size(); i++) {
-			Object id = boardsByUserContainer.getIdByIndex(i);
-			Item item = boardsByUserContainer.getItem(id);
-			Property id_board = item.getItemProperty("id");
-			Property name = item.getItemProperty("name");
-			Property marked = item.getItemProperty("marked");
-			Board board = new Board((String) name.getValue());
-			board.setName((String) name.getValue()); //?
-			board.setBoardId(id_board.getValue().toString());
-			board.setMarked(Integer.parseInt(marked.getValue().toString()));
-			boards.add(board);
+		String sql = "SELECT * FROM boards ORDER BY marked DESC";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		ResultSet rs = statement.executeQuery();
+		while (rs.next()) 
+		{
+			logger.log(Level.SEVERE, ""+ rs.getInt("marked"));
+			String id = rs.getString("id");
+			String name = rs.getString("name");
+			int marked = rs.getInt("marked");
+			boards.add(new Board(id, name, marked));
 		}
-		
+		statement.close();
+		rs.close();
 		return boards;
+//		ArrayList<Board> boards = new ArrayList<Board>();
+//		
+//		FreeformQuery q2 = new FreeformQuery("SELECT * FROM boards ORDER BY marked DESC", connectionPool);
+//		boardsByUserContainer = new SQLContainer(q2);
+//		
+//		for (int i = 0; i < boardsByUserContainer.size(); i++) {
+//			Object id = boardsByUserContainer.getIdByIndex(i);
+//			Item item = boardsByUserContainer.getItem(id);
+//			Property id_board = item.getItemProperty("id");
+//			Property name = item.getItemProperty("name");
+//			Property marked = item.getItemProperty("marked");
+//			Board board = new Board(id_board.getValue().toString(),name.getValue().toString(),(int) marked.getValue());
+//			board.setName((String) name.getValue()); //?
+//			board.setBoardId(id_board.getValue().toString());
+//			board.setMarked(Integer.parseInt(marked.getValue().toString()));
+//			boards.add(board);
+//		}
+//		
+//		return boards;
 	}
 	
 	public String getMarkedBoardById(String idBoard) throws SQLException

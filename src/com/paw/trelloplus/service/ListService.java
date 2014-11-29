@@ -1,6 +1,8 @@
 package com.paw.trelloplus.service;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class ListService extends AbstractService  {
 	 * 
 	 */
 	private static final long serialVersionUID = -7234308085879341017L;
-	private SQLContainer listsContainer;
+
 	
 	private final static Logger logger = Logger.getLogger(ListService.class.getName());
 	
@@ -30,56 +32,52 @@ public class ListService extends AbstractService  {
 	
 	}
 	
-	public List addList(int idBoard, String title, int idUser)
-			throws UnsupportedOperationException, SQLException {
+	public List addList(int idBoard, String title, int idUser)throws UnsupportedOperationException, SQLException {
 		
-		Object rowId = listsContainer.addItem();
-		Item rowItem = listsContainer.getItem(rowId);
-		rowItem.getItemProperty("id_board").setValue(idBoard);
-		rowItem.getItemProperty("name").setValue(title);
-		listsContainer.commit();
-		                  
-		
-		List list = new List(title);
-		list.setId_board(idBoard+"");
-		list.setId_list(((RowId) listsContainer.lastItemId()).toString());
-		return list;
+	    String sql ="INSERT INTO lists values(NUll, ?, ?)";
+	    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+	    statement.setInt(1, idBoard);
+	    statement.setString(2, title);
+	    statement.executeUpdate();
+	    ResultSet rs = statement.getGeneratedKeys();
+		int id = 0;
+		if (rs.next()){
+		    id =rs.getInt(1);
+		}
+	    statement.close();
+	    connection.commit(); 
+	    List list = new List(id+"", idBoard+"", title);
+	    
+	    return list;
 	}
 
-	public ArrayList<List> getAllList() {
+	public ArrayList<List> getAllList() throws SQLException {
 		ArrayList<List> lists = new ArrayList<List>();
-		for (int i = 0; i < listsContainer.size(); i++) {
-			Object id = listsContainer.getIdByIndex(i);
-			Item item = listsContainer.getItem(id);
-			Property id_list = item.getItemProperty("id_list");
-			Property id_board = item.getItemProperty("id_board");
-			Property name = item.getItemProperty("name");
-			List list = new List((String) name.getValue());
-
-			list.setId_list(id_list.getValue() + "");
-			list.setId_board(id_board.getValue() + "");
-			list.setName(name.getValue() + "");
-
-			lists.add(list);
+		String sql = "SELECT * from lists";
+		PreparedStatement statement =  connection.prepareStatement(sql);
+		ResultSet rs = statement.executeQuery();
+		while(rs.next()) 
+		{
+			lists.add(new List(rs.getString("id_list"), rs.getString("id_board"),rs.getString("name")));
 		}
-
 		return lists;
 	}
+
 
 	
 	@Override
 	protected void initContainers()
 	{
 		
-		try {
-			TableQuery q1 = new TableQuery("lists", connectionPool);
-			q1.setVersionColumn("VERSION");
-			listsContainer = new SQLContainer(q1);
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			TableQuery q1 = new TableQuery("lists", connectionPool);
+//			q1.setVersionColumn("VERSION");
+//			listsContainer = new SQLContainer(q1);
+//			
+//		} catch (SQLException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 }

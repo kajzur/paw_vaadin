@@ -482,7 +482,8 @@ public class TasksView extends VerticalLayout implements View {
 					addLabelMarkedTable();
 				}
 
-				boardService.initContainers();
+//				boardService.initContainers();
+				logger.log(Level.SEVERE, "wywo³anie przy odœwierzaniu tablicy");
 				boards = boardService.getAllBoard();
 
 				chooseBoards.removeChildren();

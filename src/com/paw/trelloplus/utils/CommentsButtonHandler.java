@@ -1,5 +1,6 @@
 package com.paw.trelloplus.utils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import com.paw.trelloplus.components.CommentWindow;
@@ -32,9 +33,16 @@ public class CommentsButtonHandler implements ClickListener {
 
 		cw = new CommentWindow(task);
 		ts.setTask(task);
-		ArrayList<Comment> comments = ts.getCommentsToTaskByCurrentTask();
-		cw.setComments(comments);
-		task.getUI().addWindow(cw);
+		ArrayList<Comment> comments;
+		try {
+			comments = ts.getCommentsToTaskByCurrentTask(task.getTask_id());
+			cw.setComments(comments);
+			task.getUI().addWindow(cw);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		
 	}
 

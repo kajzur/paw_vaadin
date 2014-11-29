@@ -1,5 +1,8 @@
 package com.paw.trelloplus.tests;
 
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,24 +18,52 @@ public class AuthorizationServiceTest {
 	}
 	@Test
 	public void setUserIdTest(){
-		String id = as.getUserId(defaultUserName);
-		Assert.assertNotNull("Id of "+defaultUserName+" is null!", id);
+		String id;
+		try {
+			id = as.getUserId(defaultUserName);
+			Assert.assertNotNull("Id of "+defaultUserName+" is null!", id);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	@Test
 	public void checkUserCredentialsTest(){
-		boolean result = as.checkUserCredentials(defaultUserName, defaultUserPassword);
-		Assert.assertTrue(result);
+		boolean result;
+		try {
+			result = as.checkUserCredentials(defaultUserName, defaultUserPassword);
+			Assert.assertTrue(result);
+		} catch (NoSuchAlgorithmException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	@Test
 	public void checkUserCredentialsWhenLoginAndPassAreWrongTest(){
-		boolean result = as.checkUserCredentials(defaultUserName+"1", defaultUserPassword+"1");
-		Assert.assertFalse(result);
+		boolean result;
+		try {
+			result = as.checkUserCredentials(defaultUserName+"1", defaultUserPassword+"1");
+			Assert.assertFalse(result);
+		} catch (NoSuchAlgorithmException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Test
 	public void checkUserCredentialsWhenPassIsWrong(){
-		boolean result = as.checkUserCredentials(defaultUserName, defaultUserPassword+"1");
-		Assert.assertFalse(result);
+		boolean result;
+		try {
+			result = as.checkUserCredentials(defaultUserName, defaultUserPassword+"1");
+			Assert.assertFalse(result);
+		} catch (NoSuchAlgorithmException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 }
