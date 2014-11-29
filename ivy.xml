@@ -45,6 +45,9 @@
 		<!-- testbench addon -->
 		<dependency org="com.vaadin" name="vaadin-testbench-api"
 		   rev="latest.release" conf="nodeploy->default"/>
+		   
+		<dependency org="org.vaadin.addons" name="dragdroplayouts" rev="1.1.1" />
+
 		<!-- Compiler for custom widget sets. Should not be deployed -->
 		<dependency org="com.vaadin" name="vaadin-client-compiler"
 			rev="&vaadin.version;" conf="widgetset-compile->default" />

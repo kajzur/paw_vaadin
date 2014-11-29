@@ -361,13 +361,13 @@ public class TasksView extends VerticalLayout implements View {
 				}
 
 			}
-			DragAndDropWrapper dd = new DragAndDropWrapper(cList);
-			dd.setData(cList);
-
-			dd.setDropHandler(new ListDropHandler(allLists));
-
-			mainLayout.addComponent(dd);
-			mainLayout.setExpandRatio(dd, 1f);
+//			DragAndDropWrapper dd = new DragAndDropWrapper(cList);
+//			dd.setData(cList);
+//
+//			dd.setDropHandler(new ListDropHandler(allLists));
+			cList.setDrop(new ListDropHandler(allLists));
+			mainLayout.addComponent(cList);
+			mainLayout.setExpandRatio(cList, 1f);
 		}
 	}
 

@@ -52,7 +52,10 @@ body{
 	text-align: center;
 	
 }
-
+.tasks{
+	min-height:50px;
+	width:200px;
+}
 .v-slot-bordered-grid{
 	height: 100%;
 	overflow-x: scroll;

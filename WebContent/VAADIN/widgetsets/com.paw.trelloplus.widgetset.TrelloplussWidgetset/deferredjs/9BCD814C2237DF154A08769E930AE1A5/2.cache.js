@@ -1,0 +1,1 @@
+$wnd.com_paw_trelloplus_widgetset_TrelloplussWidgetset.runAsyncCallback2('kbb(535,1,Hxd);_.vc=function S3b(){DTb((!wTb&&(wTb=new ITb),wTb),this.b.e)};gsd(Vh)(2);\n//# sourceURL=com.paw.trelloplus.widgetset.TrelloplussWidgetset-2.js\n')
