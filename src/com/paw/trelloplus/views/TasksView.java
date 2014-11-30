@@ -204,6 +204,7 @@ public class TasksView extends VerticalLayout implements View {
 		subWindowForList.setSpacing(true);
 
 		final TextField titleNewList = new TextField();
+		titleNewList.setInputPrompt("Podaj tytul listy");
 		titleNewList.setSizeFull();
 
 		Button createList = new Button("Dodaj Liste");
@@ -351,8 +352,24 @@ public class TasksView extends VerticalLayout implements View {
 
 				if (cList.getId_list().equals(listAllTasks.get(j).getId_list())) {
 
+					if (listAllTasks.get(j).getMarked().equals("5")) {
+						listAllTasks.get(j).setStyleName("pink_marked_task");
+					}
+					
+					if (listAllTasks.get(j).getMarked().equals("4")) {
+						listAllTasks.get(j).setStyleName("purple_marked_task");
+					}
+					
+					if (listAllTasks.get(j).getMarked().equals("3")) {
+						listAllTasks.get(j).setStyleName("red_marked_task");
+					}
+					
+					if (listAllTasks.get(j).getMarked().equals("2")) {
+						listAllTasks.get(j).setStyleName("green_marked_task");
+					}
+					
 					if (listAllTasks.get(j).getMarked().equals("1")) {
-						listAllTasks.get(j).setStyleName("marked");
+						listAllTasks.get(j).setStyleName("blue_marked_task");
 					}
 					if (listAllTasks.get(j).getMarked().equals("0")) {
 						listAllTasks.get(j).setStyleName("task");

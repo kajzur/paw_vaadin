@@ -14,6 +14,14 @@ body{
 	height: 100% !important;
 	width: auto !important;
 }
+
+.board{
+	width: 100% !important;
+	height: 100% !important;
+	background-color:green;
+	
+}
+
 .task{
 	width: 200px !important;
 	height: 200px !important;
@@ -22,14 +30,8 @@ body{
 	margin:2px auto 2px auto;
 	padding:0 2px 0 2px;
 }
-.board{
-	width: 100% !important;
-	height: 100% !important;
-	background-color:green;
-	
-}
 
-.marked{
+.blue_marked_task{
 	width: 200px !important;
 	height: 200px !important;
 	background-color: #33b5e5;
@@ -37,6 +39,43 @@ body{
 	margin:2px auto 2px auto;
 	padding:0 2px 0 2px;
 }
+
+.green_marked_task{
+	width: 200px !important;
+	height: 200px !important;
+	background-color: #41C200;
+	border: 1px solid !important;
+	margin:2px auto 2px auto;
+	padding:0 2px 0 2px;
+}
+
+.red_marked_task{
+	width: 200px !important;
+	height: 200px !important;
+	background-color: #F54747;
+	border: 1px solid !important;
+	margin:2px auto 2px auto;
+	padding:0 2px 0 2px;
+}
+
+.purple_marked_task{
+	width: 200px !important;
+	height: 200px !important;
+	background-color: #A632DB;
+	border: 1px solid !important;
+	margin:2px auto 2px auto;
+	padding:0 2px 0 2px;
+}
+
+.pink_marked_task{
+	width: 200px !important;
+	height: 200px !important;
+	background-color: #D778CB;
+	border: 1px solid !important;
+	margin:2px auto 2px auto;
+	padding:0 2px 0 2px;
+}
+
 .task .v-verticallayout{
 	width:100%;	
 }

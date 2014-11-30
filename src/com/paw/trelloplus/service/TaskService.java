@@ -55,15 +55,16 @@ public class TaskService extends AbstractService {
 
 	}
 	
-	public Task addTask(String listId, String title, String description, String marked)
+	public Task addTask(String listId, String title, String description, String marked, String complexity)
 			throws UnsupportedOperationException, SQLException {
 
-		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0))";
+		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0), ?)";
 	    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    statement.setString(1, listId);
 	    statement.setString(2, title);
 	    statement.setString(3, description);
 	    statement.setString(4, listId);
+	    statement.setString(5, complexity);
 	    statement.executeUpdate();
 	    ResultSet rs = statement.getGeneratedKeys();
 		int id = 0;
@@ -72,7 +73,7 @@ public class TaskService extends AbstractService {
 		}
 	    statement.close();
 	    connection.commit(); 
-	    Task task = new Task(id+"",  title, description,listId+"", 0+"");
+	    Task task = new Task(id+"",  title, description,listId+"", 0+"", complexity);
 	    
 	    sql="INSERT INTO tasks_users values(?, ?)";
 	    statement = connection.prepareStatement(sql);
@@ -97,6 +98,7 @@ public class TaskService extends AbstractService {
 		 connection.commit();   
 	}
 	
+	
 	public String getMarkedTaskById(String idTask) throws SQLException
 	{
 		String sql = "select marked from tasks where id = ?";
@@ -109,6 +111,20 @@ public class TaskService extends AbstractService {
 		}
 		return null;
 	}
+	
+	public String getComplexityTaskById(String idTask) throws SQLException
+	{
+		String sql = "select complexity from tasks where id = ?";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, idTask);
+		ResultSet rs = statement.executeQuery();
+		if( rs.next())
+		{
+			return rs.getString("complexity");
+		}
+		
+		return null;
+	}
 
 	public ArrayList<Task> getAllTask() throws SQLException {
 
@@ -119,7 +135,7 @@ public class TaskService extends AbstractService {
 		ResultSet rs = statement.executeQuery();
 		while(rs.next()) 
 		{
-			listAllTasks.add(new Task(rs.getString("id"), rs.getString("name"),rs.getString("description"),rs.getString("id_list"),rs.getString("marked")));
+			listAllTasks.add(new Task(rs.getString("id"), rs.getString("name"),rs.getString("description"),rs.getString("id_list"),rs.getString("marked"), rs.getString("complexity")));
 		}
 		return listAllTasks;
 	}
