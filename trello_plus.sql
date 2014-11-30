@@ -3,12 +3,18 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 29 Lis 2014, 21:34
+-- Generation Time: 30 Lis 2014, 16:54
 -- Server version: 5.5.36
 -- PHP Version: 5.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `trello_plus`
@@ -34,10 +40,10 @@ CREATE TABLE IF NOT EXISTS `boards` (
 --
 
 INSERT INTO `boards` (`id`, `name`, `marked`) VALUES
-(3, 'Tablica A', 1),
-(5, 'Tablica B', 0),
-(6, 'Tablica C', 1),
-(7, 'a', 1);
+(3, 'Tablica A', 0),
+(5, 'Tablica B', 1),
+(6, 'Tablica C', 0),
+(7, 'a', 0);
 
 -- --------------------------------------------------------
 
@@ -146,20 +152,24 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `description` text COLLATE utf8_unicode_ci NOT NULL,
   `marked` int(255) NOT NULL DEFAULT '0',
   `lp` int(11) NOT NULL,
+  `complexity` int(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=101 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=110 ;
 
 --
 -- Zrzut danych tabeli `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`) VALUES
-(97, 62, 'name', 'desc', 0, 0),
-(98, 63, 'name', 'desc', 0, 2),
-(99, 62, '22', '22', 0, 1),
-(100, 62, '33', '33', 0, 3);
+INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`) VALUES
+(97, 62, 'name', 'desc', 0, 0, 1),
+(98, 63, 'name', 'desc', 5, 1, 1),
+(99, 62, '22', '22', 2, 1, 0),
+(100, 62, '33', '33', 1, 3, 0),
+(105, 63, 'zadanie 3', 'opis 3', 0, 2, 3),
+(107, 63, 'zadanie 4', 'opis 4', 0, 3, 2),
+(109, 63, 'zadanie 5', 'opis 5', 4, 0, 5);
 
 -- --------------------------------------------------------
 
@@ -171,6 +181,21 @@ CREATE TABLE IF NOT EXISTS `tasks_users` (
   `id_task` int(11) NOT NULL,
   `id_user` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Zrzut danych tabeli `tasks_users`
+--
+
+INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
+(101, 11),
+(102, 11),
+(103, 11),
+(104, 11),
+(105, 11),
+(106, 11),
+(107, 11),
+(108, 11),
+(109, 11);
 
 -- --------------------------------------------------------
 
@@ -249,3 +274,7 @@ INSERT INTO `users_organizations` (`id_user`, `id_organization`) VALUES
 (2, 1),
 (2, 2),
 (6, 3);
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
