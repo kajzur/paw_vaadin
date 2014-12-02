@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.1.12
+-- version 4.0.4.1
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: 30 Lis 2014, 16:54
--- Server version: 5.5.36
--- PHP Version: 5.4.27
+-- Czas wygenerowania: 02 Gru 2014, 22:16
+-- Wersja serwera: 5.5.32
+-- Wersja PHP: 5.4.19
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,8 +17,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Database: `trello_plus`
+-- Baza danych: `trello_plus`
 --
+CREATE DATABASE IF NOT EXISTS `trello_plus` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE `trello_plus`;
 
 -- --------------------------------------------------------
 
@@ -42,8 +44,7 @@ CREATE TABLE IF NOT EXISTS `boards` (
 INSERT INTO `boards` (`id`, `name`, `marked`) VALUES
 (3, 'Tablica A', 0),
 (5, 'Tablica B', 1),
-(6, 'Tablica C', 0),
-(7, 'a', 0);
+(6, 'Tablica C', 0);
 
 -- --------------------------------------------------------
 
@@ -136,8 +137,7 @@ CREATE TABLE IF NOT EXISTS `organizations` (
 INSERT INTO `organizations` (`id`, `name`) VALUES
 (1, 'organizacja'),
 (2, 'organizacja2'),
-(3, 'organizacja3'),
-(4, 'organizacja 5');
+(3, 'organizacja3');
 
 -- --------------------------------------------------------
 
@@ -153,23 +153,24 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `marked` int(255) NOT NULL DEFAULT '0',
   `lp` int(11) NOT NULL,
   `complexity` int(255) NOT NULL,
+  `deadline` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=110 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=122 ;
 
 --
 -- Zrzut danych tabeli `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`) VALUES
-(97, 62, 'name', 'desc', 0, 0, 1),
-(98, 63, 'name', 'desc', 5, 1, 1),
-(99, 62, '22', '22', 2, 1, 0),
-(100, 62, '33', '33', 1, 3, 0),
-(105, 63, 'zadanie 3', 'opis 3', 0, 2, 3),
-(107, 63, 'zadanie 4', 'opis 4', 0, 3, 2),
-(109, 63, 'zadanie 5', 'opis 5', 4, 0, 5);
+INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`, `deadline`) VALUES
+(115, 63, 'zadanie 1', 'opis zadania 1', 0, 0, 3, '2014-12-02 10:30:00'),
+(116, 62, 'zadanie 2', 'opis zadania 2', 2, 2, 5, '2014-12-11 10:00:00'),
+(117, 62, 'zadanie 3', 'opis zadania 3', 0, 3, 2, '2014-12-02 22:00:00'),
+(118, 63, 'zadanie 4', 'opis zadania 4', 4, 1, 1, '2014-12-11 12:00:00'),
+(119, 65, 'zadanie 5', 'opis zadania 5', 0, 0, 4, '2015-01-10 11:00:00'),
+(120, 65, 'zadanie 6 ', 'opis zadania 6', 0, 0, 2, '2014-12-02 22:14:59'),
+(121, 64, 'zadanie 7', 'opis zadania 7', 0, 0, 4, '2015-01-10 11:00:00');
 
 -- --------------------------------------------------------
 
@@ -195,7 +196,21 @@ INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
 (106, 11),
 (107, 11),
 (108, 11),
-(109, 11);
+(109, 11),
+(110, 11),
+(111, 11),
+(112, 11),
+(112, 13),
+(112, 15),
+(114, 11),
+(114, 17),
+(113, 11),
+(113, 14),
+(117, 11),
+(118, 11),
+(119, 11),
+(120, 11),
+(121, 11);
 
 -- --------------------------------------------------------
 
@@ -210,7 +225,7 @@ CREATE TABLE IF NOT EXISTS `task_comments` (
   `user_id` int(11) NOT NULL,
   `content` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=9 ;
 
 --
 -- Zrzut danych tabeli `task_comments`
@@ -223,7 +238,8 @@ INSERT INTO `task_comments` (`id`, `task_id`, `created`, `user_id`, `content`) V
 (4, 89, '2014-11-29 14:26:28', 11, 'ddddd'),
 (5, 89, '2014-11-29 14:26:38', 11, 'kakakakakaka'),
 (6, 89, '2014-11-29 14:26:46', 11, 'ujdiwkea'),
-(7, 88, '2014-11-29 14:27:06', 11, 'dddddeddd');
+(7, 88, '2014-11-29 14:27:06', 11, 'dddddeddd'),
+(8, 113, '2014-12-02 14:33:00', 11, 'dddd');
 
 -- --------------------------------------------------------
 

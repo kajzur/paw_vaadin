@@ -1,9 +1,11 @@
 package com.paw.trelloplus.components;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Logger;
 
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Logger;
 import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.service.AuthorizationService;
 import com.paw.trelloplus.service.TaskService;
@@ -18,7 +20,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -34,20 +35,14 @@ public class Task extends CustomComponent {
 	private String task_id;
 	private String complexity;
 	private String marked;
+	private Date deadline;
 	private Window addUserWindow;
 	private Window addMarkedWindow;
 	private Button addUser, addLabelForTask;
 	private AuthorizationService authorizationService;
 	private TaskService taskService;
-
-	public String getTask_id() {
-		return task_id;
-	}
-
-	public void setTask_id(String task_id) {
-		this.task_id = task_id;
-	}
-
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private Label deadlineLabel;
 	private String title;
 	private String desc;
 	private VerticalLayout vt;
@@ -55,14 +50,16 @@ public class Task extends CustomComponent {
 	private final static Logger logger = Logger.getLogger(TasksView.class
 			.getName());
 
-	public Task(String id, String title, String desc, String id_list,
-			final String marked1, String complexity1) throws SQLException {
+	public Task(String id, final String title, final String desc, String id_list,
+			final String marked1, String complexity1, final Date deadline) throws SQLException {
+		
 		this.task_id = id;
 		this.title = title;
 		this.desc = desc;
 		this.id_list = id_list;
 		this.marked = marked1;
 		this.complexity = complexity1;
+		this.deadline = deadline;
 
 		taskService = new TaskService();
 
@@ -76,10 +73,19 @@ public class Task extends CustomComponent {
 
 		HorizontalLayout l3 = new HorizontalLayout();
 		l3.addComponent(new Label("zlozonosc: " + complexity1));
+		
+		final HorizontalLayout l4 = new HorizontalLayout();
+		deadlineLabel = new Label("termin: " + formatter.format(deadline));
+		if(deadline.before(new Date()))
+		{
+			deadlineLabel.setStyleName("red-label");
+		}
+		l4.addComponent(deadlineLabel);
 
 		vt = new VerticalLayout();
 
 		ht = new HorizontalLayout();
+		
 
 		addLabelForTask = new Button("*");
 		addLabelForTask.addClickListener(new Button.ClickListener() {
@@ -130,16 +136,16 @@ public class Task extends CustomComponent {
 		vt.addComponent(l1);
 		vt.addComponent(l2);
 		vt.addComponent(l3);
+		vt.addComponent(l4);
 
-		ArrayList<User> users = authorizationService
-				.getUsersByTask(getTask_id());
+		ArrayList<User> users = authorizationService.getUsersByTask(getTask_id());
 
 		for (User user : users) {
 			vt.addComponent(new Label(user.getLogin()));
 		}
 		vt.addComponent(ht);
 		setCompositionRoot(vt);
-
+		
 	}
 
 	@SuppressWarnings("deprecation")
@@ -274,6 +280,8 @@ public class Task extends CustomComponent {
 					vt.removeAllComponents();
 					vt.addComponent(new Label(title));
 					vt.addComponent(new Label(desc));
+					vt.addComponent(new Label("zlozonosc: " + complexity));
+					vt.addComponent(deadlineLabel);
 					ht.removeAllComponents();
 					ht.addComponent(addLabelForTask);
 					ht.addComponent(addUser);
@@ -338,6 +346,14 @@ public class Task extends CustomComponent {
 
 	public void setMarked(String marked) {
 		this.marked = marked;
+	}
+	
+	public String getTask_id() {
+		return task_id;
+	}
+
+	public void setTask_id(String task_id) {
+		this.task_id = task_id;
 	}
 
 	private Button getCommentButton(String name) {

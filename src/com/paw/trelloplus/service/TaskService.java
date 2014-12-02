@@ -4,30 +4,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.gwt.user.client.rpc.core.java.util.Collections;
 import com.paw.trelloplus.components.Task;
 import com.paw.trelloplus.models.Comment;
 import com.paw.trelloplus.utils.Helper;
 import com.paw.trelloplus.views.LoginView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HasComponents;
-
 import fi.jasoft.dragdroplayouts.DDVerticalLayout;
 
 public class TaskService extends AbstractService {
 
 
 	private Task task;
+	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private final static Logger logger = Logger.getLogger(TaskService.class.getName());
 	
 	public TaskService() {
@@ -55,16 +52,17 @@ public class TaskService extends AbstractService {
 
 	}
 	
-	public Task addTask(String listId, String title, String description, String marked, String complexity)
-			throws UnsupportedOperationException, SQLException {
+	public Task addTask(String listId, String title, String description, String marked, String complexity, String deadline)
+			throws UnsupportedOperationException, SQLException, ParseException {
 
-		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0), ?)";
+		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0), ?, ?)";
 	    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    statement.setString(1, listId);
 	    statement.setString(2, title);
 	    statement.setString(3, description);
 	    statement.setString(4, listId);
 	    statement.setString(5, complexity);
+	    statement.setString(6, deadline);
 	    statement.executeUpdate();
 	    ResultSet rs = statement.getGeneratedKeys();
 		int id = 0;
@@ -73,7 +71,7 @@ public class TaskService extends AbstractService {
 		}
 	    statement.close();
 	    connection.commit(); 
-	    Task task = new Task(id+"",  title, description,listId+"", 0+"", complexity);
+	    Task task = new Task(id+"",  title, description,listId+"", 0+"", complexity, formatter.parse(deadline));
 	    
 	    sql="INSERT INTO tasks_users values(?, ?)";
 	    statement = connection.prepareStatement(sql);
@@ -126,7 +124,7 @@ public class TaskService extends AbstractService {
 		return null;
 	}
 
-	public ArrayList<Task> getAllTask() throws SQLException {
+	public ArrayList<Task> getAllTask() throws SQLException, ParseException {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
@@ -135,7 +133,8 @@ public class TaskService extends AbstractService {
 		ResultSet rs = statement.executeQuery();
 		while(rs.next()) 
 		{
-			listAllTasks.add(new Task(rs.getString("id"), rs.getString("name"),rs.getString("description"),rs.getString("id_list"),rs.getString("marked"), rs.getString("complexity")));
+			logger.log(Level.SEVERE, "time: "+rs.getString("deadline"));
+			listAllTasks.add(new Task(rs.getString("id"), rs.getString("name"),rs.getString("description"),rs.getString("id_list"),rs.getString("marked"), rs.getString("complexity"), formatter.parse(rs.getString("deadline"))));
 		}
 		return listAllTasks;
 	}

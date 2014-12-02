@@ -1,6 +1,8 @@
 package com.paw.trelloplus.components;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,6 +12,7 @@ import com.paw.trelloplus.utils.ListDropHandler;
 import com.paw.trelloplus.views.TasksView;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.event.dd.DropHandler;
+import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -20,6 +23,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -128,6 +132,12 @@ public class List extends VerticalLayout {
 		final TextArea descriptionArea = new TextArea();
 		descriptionArea.setInputPrompt("Podaj opis");
 		descriptionArea.setSizeFull();
+		
+		final PopupDateField deadline = new PopupDateField("deadline: ");
+		deadline.setResolution(Resolution.SECOND);
+		deadline.setValue(new java.util.Date());
+		deadline.setDateFormat("yyyy-MM-dd HH:mm:ss");
+
 
 		BeanItemContainer<String> container = new BeanItemContainer<String>(
 				String.class);
@@ -158,13 +168,19 @@ public class List extends VerticalLayout {
 			public void buttonClick(ClickEvent event) {
 				Task newTask = null;
 				try {
-
+					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					newTask = taskService.addTask(getId_list(),
 							title.getValue(), descriptionArea.getValue(), "0",
-							c);
+							c, formatter.format(deadline.getValue()));
 
 				} catch (SQLException e) {
 					Notification.show(e.getMessage());
+				} catch (UnsupportedOperationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				windowCreateTask.close();
 
@@ -189,10 +205,11 @@ public class List extends VerticalLayout {
 		buttonGroupLayout.setSizeFull();
 		buttonGroupLayout.addComponent(save);
 		buttonGroupLayout.addComponent(cancel);
-
+		
 		subWindowForTask.addComponent(title);
 		subWindowForTask.addComponent(descriptionArea);
 		subWindowForTask.addComponent(select);
+		subWindowForTask.addComponent(deadline);
 		subWindowForTask.addComponent(buttonGroupLayout);
 
 		windowCreateTask.setContent(subWindowForTask);

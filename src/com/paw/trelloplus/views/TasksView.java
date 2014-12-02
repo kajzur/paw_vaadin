@@ -2,10 +2,12 @@ package com.paw.trelloplus.views;
 
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 
@@ -159,10 +161,8 @@ public class TasksView extends VerticalLayout implements View {
 					Notification.show("Dodano..");
 					chooseBoards.addItem(titleBoard.getValue(), menuCommand);
 					chooseBoards.addSeparator();
-	//				boardService.initContainers();
 					boards = boardService.getAllBoard();
 				} catch (UnsupportedOperationException | SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				windowCreateBoard.close();
@@ -343,7 +343,10 @@ public class TasksView extends VerticalLayout implements View {
 			}
 		}
 
-		ArrayList<Task> listAllTasks = taskService.getAllTask();
+		ArrayList<Task> listAllTasks;
+		try {
+			listAllTasks = taskService.getAllTask();
+		
 
 		for (int i = 0; i < allLists.size(); i++) {
 
@@ -378,13 +381,13 @@ public class TasksView extends VerticalLayout implements View {
 				}
 
 			}
-//			DragAndDropWrapper dd = new DragAndDropWrapper(cList);
-//			dd.setData(cList);
-//
-//			dd.setDropHandler(new ListDropHandler(allLists));
 			cList.setDrop(new ListDropHandler(allLists));
 			mainLayout.addComponent(cList);
 			mainLayout.setExpandRatio(cList, 1f);
+			
+		}} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
