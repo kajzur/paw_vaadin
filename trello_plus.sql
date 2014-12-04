@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Czas wygenerowania: 02 Gru 2014, 22:16
+-- Czas wygenerowania: 04 Gru 2014, 20:44
 -- Wersja serwera: 5.5.32
 -- Wersja PHP: 5.4.19
 
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `boards` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `id_2` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
 
 --
 -- Zrzut danych tabeli `boards`
@@ -101,21 +101,23 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `id_list` int(255) NOT NULL AUTO_INCREMENT,
   `id_board` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `deleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_list`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=68 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=69 ;
 
 --
 -- Zrzut danych tabeli `lists`
 --
 
-INSERT INTO `lists` (`id_list`, `id_board`, `name`) VALUES
-(62, 5, 'Lista 1'),
-(63, 5, 'Lista 2'),
-(64, 3, 'Lista 3'),
-(65, 3, 'Lista 4'),
-(66, 6, 'Lista 5'),
-(67, 6, 'Lista 6');
+INSERT INTO `lists` (`id_list`, `id_board`, `name`, `deleted`) VALUES
+(62, 5, 'Lista 1', 1),
+(63, 5, 'Lista 2', 0),
+(64, 3, 'Lista 3', 0),
+(65, 3, 'Lista 4', 0),
+(66, 6, 'Lista 5', 0),
+(67, 6, 'Lista 6', 0),
+(68, 5, 'lista 7', 1);
 
 -- --------------------------------------------------------
 
@@ -128,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `organizations` (
   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
 
 --
 -- Zrzut danych tabeli `organizations`
@@ -154,23 +156,27 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   `lp` int(11) NOT NULL,
   `complexity` int(255) NOT NULL,
   `deadline` datetime NOT NULL,
+  `deleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=122 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=125 ;
 
 --
 -- Zrzut danych tabeli `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`, `deadline`) VALUES
-(115, 63, 'zadanie 1', 'opis zadania 1', 0, 0, 3, '2014-12-02 10:30:00'),
-(116, 62, 'zadanie 2', 'opis zadania 2', 2, 2, 5, '2014-12-11 10:00:00'),
-(117, 62, 'zadanie 3', 'opis zadania 3', 0, 3, 2, '2014-12-02 22:00:00'),
-(118, 63, 'zadanie 4', 'opis zadania 4', 4, 1, 1, '2014-12-11 12:00:00'),
-(119, 65, 'zadanie 5', 'opis zadania 5', 0, 0, 4, '2015-01-10 11:00:00'),
-(120, 65, 'zadanie 6 ', 'opis zadania 6', 0, 0, 2, '2014-12-02 22:14:59'),
-(121, 64, 'zadanie 7', 'opis zadania 7', 0, 0, 4, '2015-01-10 11:00:00');
+INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`, `deadline`, `deleted`) VALUES
+(115, 63, 'zadanie 1', 'opis zadania 1', 0, 1, 3, '2014-12-02 10:30:00', 0),
+(116, 62, 'zadanie 2', 'opis zadania 2', 2, 0, 5, '2014-12-11 10:00:00', 1),
+(117, 62, 'zadanie 3', 'opis zadania 3', 0, 1, 2, '2014-12-02 22:00:00', 1),
+(118, 63, 'zadanie 4', 'opis zadania 4', 4, 0, 1, '2014-12-11 12:00:00', 1),
+(119, 65, 'zadanie 5', 'opis zadania 5', 0, 0, 4, '2015-01-10 11:00:00', 0),
+(120, 65, 'zadanie 6 ', 'opis zadania 6', 0, 0, 2, '2014-12-02 22:14:59', 0),
+(121, 64, 'zadanie 7', 'opis zadania 7', 0, 0, 4, '2015-01-10 11:00:00', 0),
+(122, 68, 'zadanie 8', 'opis zadania 8', 0, 0, 5, '2014-12-27 19:00:00', 1),
+(123, 63, 'zadanie 9', 'opis zadania 9', 0, 2, 3, '2014-12-04 19:35:07', 1),
+(124, 63, 'zadanie 10', 'opis zadania 10', 0, 3, 3, '2014-12-29 20:00:00', 0);
 
 -- --------------------------------------------------------
 
@@ -210,7 +216,12 @@ INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
 (118, 11),
 (119, 11),
 (120, 11),
-(121, 11);
+(121, 11),
+(122, 11),
+(123, 11),
+(115, 14),
+(115, 16),
+(124, 11);
 
 -- --------------------------------------------------------
 
