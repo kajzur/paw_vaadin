@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.paw.trelloplus.service.ListService;
 import com.paw.trelloplus.service.TaskService;
 import com.paw.trelloplus.utils.ListDropHandler;
 import com.paw.trelloplus.views.TasksView;
@@ -20,6 +21,7 @@ import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.DragAndDropWrapper.DragStartMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.Notification;
@@ -49,7 +51,9 @@ public class List extends VerticalLayout {
 	private Window windowCreateTask;
 	private VerticalLayout subWindowForTask;
 	private TaskService taskService;
+	private ListService listService;
 	private DDVerticalLayout taskContainer;
+	private Button deleteListButton;
 	private final static Logger logger = Logger.getLogger(List.class.getName());
 	private static final float EQUAL_VERTICAL_RATIO = 0.3f;
 	String c = "";
@@ -57,9 +61,6 @@ public class List extends VerticalLayout {
 	@Override
 	public void addComponent(Component c) {
 		if (c instanceof Task) {
-			// DragAndDropWrapper dd = new DragAndDropWrapper(c);
-			// dd.setDragStartMode(DragStartMode.COMPONENT);
-			// dd.setData(c);
 			taskContainer.addComponent(c);
 		} else
 			super.addComponent(c);
@@ -81,6 +82,7 @@ public class List extends VerticalLayout {
 		taskContainer = new DDVerticalLayout();
 		taskContainer.setStyleName("tasks");
 		taskService = new TaskService();
+		listService = new ListService();
 		taskContainer.setComponentVerticalDropRatio(EQUAL_VERTICAL_RATIO);
 		taskContainer.setDragMode(LayoutDragMode.CLONE);
 		taskContainer.setDragFilter(new DragFilter() {
@@ -108,7 +110,24 @@ public class List extends VerticalLayout {
 
 			}
 		});
+		deleteListButton = new Button("X");
+		deleteListButton.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					listService.setDeleted(getId_list());
+					Layout parent = (Layout)getParent();
+					parent.removeComponent(List.this);
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+		});
 		addComponent(addNewListBtn);
+		addComponent(deleteListButton);
 		addComponent(taskContainer);
 		subWindowForTask = new VerticalLayout();
 		subWindowForTask.setMargin(true);

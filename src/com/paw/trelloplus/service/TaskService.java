@@ -55,7 +55,7 @@ public class TaskService extends AbstractService {
 	public Task addTask(String listId, String title, String description, String marked, String complexity, String deadline)
 			throws UnsupportedOperationException, SQLException, ParseException {
 
-		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0), ?, ?)";
+		String sql ="INSERT INTO tasks values(NUll, ?, ?, ?,0, IFNULL((select max(g.lp)+1 from tasks g where g.`id_list`=?), 0), ?, ?, 0)";
 	    PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 	    statement.setString(1, listId);
 	    statement.setString(2, title);
@@ -110,6 +110,15 @@ public class TaskService extends AbstractService {
 		return null;
 	}
 	
+	public void setDeleted(String idTask) throws SQLException
+	{
+		String sql = "UPDATE tasks SET deleted = 1 WHERE id = ?";
+		PreparedStatement statement = connection.prepareStatement(sql);
+		statement.setString(1, idTask);
+		statement.executeUpdate();
+		connection.commit(); 
+	}
+	
 	public String getComplexityTaskById(String idTask) throws SQLException
 	{
 		String sql = "select complexity from tasks where id = ?";
@@ -120,7 +129,6 @@ public class TaskService extends AbstractService {
 		{
 			return rs.getString("complexity");
 		}
-		
 		return null;
 	}
 
@@ -128,7 +136,7 @@ public class TaskService extends AbstractService {
 
 		ArrayList<Task> listAllTasks = new ArrayList<>();
 
-		String sql = "SELECT * from tasks order by lp ASC";
+		String sql = "SELECT * from tasks where deleted = 0 order by lp ASC";
 		PreparedStatement statement =  connection.prepareStatement(sql);
 		ResultSet rs = statement.executeQuery();
 		while(rs.next()) 

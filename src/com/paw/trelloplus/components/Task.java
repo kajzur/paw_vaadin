@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Logger;
+
 import com.paw.trelloplus.models.User;
 import com.paw.trelloplus.service.AuthorizationService;
 import com.paw.trelloplus.service.TaskService;
@@ -24,6 +25,8 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import fi.jasoft.dragdroplayouts.DDVerticalLayout;
+
 public class Task extends CustomComponent {
 
 	/**
@@ -38,7 +41,7 @@ public class Task extends CustomComponent {
 	private Date deadline;
 	private Window addUserWindow;
 	private Window addMarkedWindow;
-	private Button addUser, addLabelForTask;
+	private Button addUser, addLabelForTask, deletedTaskButton;
 	private AuthorizationService authorizationService;
 	private TaskService taskService;
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -103,6 +106,22 @@ public class Task extends CustomComponent {
 				getUI().addWindow(addMarkedWindow);
 			}
 		});
+		
+		deletedTaskButton = new Button("X");
+		deletedTaskButton.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					taskService.setDeleted(getTask_id());
+					DDVerticalLayout parent = (DDVerticalLayout)getParent();
+					parent.removeComponent(Task.this);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
 
 		addMarkedWindow = new Window("Wybierz kolor");
 		addMarkedWindow.setModal(true);
@@ -130,7 +149,7 @@ public class Task extends CustomComponent {
 
 		ht.addComponent(addLabelForTask);
 		ht.addComponent(addUser);
-
+		ht.addComponent(deletedTaskButton);
 		ht.addComponent(getCommentButton("..."));
 
 		vt.addComponent(l1);
@@ -275,22 +294,8 @@ public class Task extends CustomComponent {
 						}
 					}
 					addUserWindow.close();
-					ArrayList<User> users;
-					users = authorizationService.getUsersByTask(getTask_id());
-					vt.removeAllComponents();
-					vt.addComponent(new Label(title));
-					vt.addComponent(new Label(desc));
-					vt.addComponent(new Label("zlozonosc: " + complexity));
-					vt.addComponent(deadlineLabel);
-					ht.removeAllComponents();
-					ht.addComponent(addLabelForTask);
-					ht.addComponent(addUser);
-					ht.addComponent(getCommentButton("..."));
-
-					for (User u : users) {
-						vt.addComponent(new Label(u.getLogin()));
-					}
-					vt.addComponent(ht);
+					refreshTask();
+					
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
@@ -360,6 +365,32 @@ public class Task extends CustomComponent {
 		Button b = new Button(name);
 		b.addClickListener(new CommentsButtonHandler(this));
 		return b;
+	}
+	
+	private void refreshTask()
+	{
+		ArrayList<User> users = null;
+		try {
+			users = authorizationService.getUsersByTask(getTask_id());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		vt.removeAllComponents();
+		vt.addComponent(new Label(title));
+		vt.addComponent(new Label(desc));
+		vt.addComponent(new Label("zlozonosc: " + complexity));
+		vt.addComponent(deadlineLabel);
+		ht.removeAllComponents();
+		ht.addComponent(addLabelForTask);
+		ht.addComponent(deletedTaskButton);
+		ht.addComponent(addUser);
+		ht.addComponent(getCommentButton("..."));
+
+		for (User u : users) {
+			vt.addComponent(new Label(u.getLogin()));
+		}
+		vt.addComponent(ht);
 	}
 
 }
