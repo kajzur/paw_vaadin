@@ -12,6 +12,9 @@ import java.util.logging.Logger;
 
 
 
+
+
+
 import com.paw.trelloplus.components.Board;
 import com.paw.trelloplus.components.List;
 import com.paw.trelloplus.components.Organization;
@@ -21,10 +24,12 @@ import com.paw.trelloplus.service.BoardService;
 import com.paw.trelloplus.service.ListService;
 import com.paw.trelloplus.service.OrganizationService;
 import com.paw.trelloplus.service.TaskService;
+import com.paw.trelloplus.utils.EditBoardButtonHandler;
 import com.paw.trelloplus.utils.ListDropHandler;
 import com.vaadin.annotations.Theme;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
@@ -39,6 +44,7 @@ import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.BaseTheme;
 
 @Theme("trelloplus.scss")
 public class TasksView extends VerticalLayout implements View {
@@ -62,7 +68,8 @@ public class TasksView extends VerticalLayout implements View {
 	public HorizontalLayout mainLayout;
 	private final static Logger logger = Logger.getLogger(TasksView.class
 			.getName());
-
+	private Label currentTableName;
+	private HorizontalLayout currentTableNameContainer;
 	public Task task;
 	public ArrayList<List> allLists;
 	ArrayList<Board> boards;
@@ -91,16 +98,19 @@ public class TasksView extends VerticalLayout implements View {
 
 		vt = new VerticalLayout();
 		ht = new HorizontalLayout();
+		currentTableNameContainer = new HorizontalLayout();
 
 		boards = boardService.getAllBoard();
-		ID_BOARD = boards.get(0).getBoardId();
+		Board currentTable = boards.get(0);
+		ID_BOARD = currentTable.getBoardId();
 
 		for (Board board : boards) {
 			chooseBoards.addItem(board.getName(), menuCommand);
 			chooseBoards.addSeparator();
 		}
 		addComponent(menubar);
-
+		setCurrentTableName(currentTable.getName());
+		addComponent(currentTableNameContainer);
 		final MenuBar.MenuItem addNewBoard = menubar.addItem("dodaj tablicê",
 				addTable);
 		final MenuBar.MenuItem addNewList = menubar.addItem("dodaj listê",
@@ -414,6 +424,40 @@ public class TasksView extends VerticalLayout implements View {
 
 	}
 
+
+	public void refreshMenu() throws SQLException {
+		boards = boardService.getAllBoard();
+
+		chooseBoards.removeChildren();
+
+		for (Board board : boards) {
+			chooseBoards.addItem(board.getName(), menuCommand);
+			chooseBoards.addSeparator();
+		}
+	}
+	
+	public String getCurrentTableName() {
+		return currentTableName.getValue();
+	}
+
+	public void setCurrentTableName(String tableName) {
+		Logger.getGlobal().log(Level.SEVERE, tableName);
+		Button edit = new Button();
+		edit.setStyleName(BaseTheme.BUTTON_LINK+" edit-table-btn");
+		edit.setIcon(new ThemeResource("icons/edit.png"));
+		edit.addClickListener(new EditBoardButtonHandler(tableName, this));
+		if(currentTableName == null)
+		{
+			currentTableName = new Label(tableName);
+			currentTableNameContainer.addComponent(currentTableName);
+			currentTableNameContainer.addComponent(edit);
+		}
+		else{
+			currentTableName.setValue(tableName);
+			currentTableNameContainer.replaceComponent(currentTableNameContainer.getComponent(1), edit);
+		}
+	}
+
 	private Command menuCommand = new Command() {
 		@Override
 		public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
@@ -425,6 +469,7 @@ public class TasksView extends VerticalLayout implements View {
 					try {
 						generateLists(ID_BOARD);
 						addLabelMarkedTable();
+						setCurrentTableName(board.getName());
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -502,16 +547,7 @@ public class TasksView extends VerticalLayout implements View {
 					addLabelMarkedTable();
 				}
 
-//				boardService.initContainers();
-				logger.log(Level.SEVERE, "wywo³anie przy odœwierzaniu tablicy");
-				boards = boardService.getAllBoard();
-
-				chooseBoards.removeChildren();
-
-				for (Board board : boards) {
-					chooseBoards.addItem(board.getName(), menuCommand);
-					chooseBoards.addSeparator();
-				}
+				refreshMenu();
 
 			} catch (SQLException e) {
 
@@ -519,6 +555,7 @@ public class TasksView extends VerticalLayout implements View {
 			}
 
 		}
+
 	};
 
 	private Command logoutCommand = new Command() {

@@ -87,4 +87,23 @@ public class BoardService extends AbstractService {
 		connection.commit();
 	}
 
+	public boolean setNameById(String newVal, String currentTableId) {
+		
+		try {
+			Logger.getGlobal().log(Level.SEVERE, "val; "+newVal+", d:"+currentTableId);
+			PreparedStatement ps = connection.prepareStatement("UPDATE boards SET name=? WHERE id=?");
+			ps.setString(1, newVal);
+			ps.setString(2, currentTableId);
+			ps.executeUpdate();
+			ps.close();
+			connection.commit();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
 }
