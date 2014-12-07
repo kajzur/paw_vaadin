@@ -1,19 +1,11 @@
 package com.paw.trelloplus.views;
 
-
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-
-
-
-
-
-
 
 import com.paw.trelloplus.components.Board;
 import com.paw.trelloplus.components.List;
@@ -27,6 +19,8 @@ import com.paw.trelloplus.service.TaskService;
 import com.paw.trelloplus.utils.EditBoardButtonHandler;
 import com.paw.trelloplus.utils.ListDropHandler;
 import com.vaadin.annotations.Theme;
+import com.vaadin.data.Property;
+import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.ThemeResource;
@@ -39,6 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.TextField;
@@ -59,9 +54,11 @@ public class TasksView extends VerticalLayout implements View {
 	public Window windowCreateBoard;
 	public Window windowCreateOrganization;
 	public Window windowAssignOrganization;
+	public Window windowChangeBackgroundBoard;
 	public VerticalLayout subWindowForTask;
 	public VerticalLayout subWindowForBoard;
 	public VerticalLayout subWindowForOrganization;
+	public VerticalLayout subWindowForChangeBackgroundBoard;
 	public VerticalLayout subWindowForList;
 	private BoardService boardService;
 	private OrganizationService organizationService;
@@ -80,6 +77,7 @@ public class TasksView extends VerticalLayout implements View {
 
 	private VerticalLayout vt;
 	private HorizontalLayout ht;
+	public Board currentTable;
 
 	Label descriptionMarkedBoard;
 	String valueMarkedBoard;
@@ -101,7 +99,7 @@ public class TasksView extends VerticalLayout implements View {
 		currentTableNameContainer = new HorizontalLayout();
 
 		boards = boardService.getAllBoard();
-		Board currentTable = boards.get(0);
+		currentTable = boards.get(0);
 		ID_BOARD = currentTable.getBoardId();
 
 		for (Board board : boards) {
@@ -121,6 +119,10 @@ public class TasksView extends VerticalLayout implements View {
 				"przypisz organizacje", assignOrganizationCmd);
 		final MenuBar.MenuItem markedBoard = menubar.addItem("*",
 				markedBoardCmd);
+		final MenuBar.MenuItem changeBackgroundBoard = menubar.addItem(
+				"zmien tlo", changeBackgroundBoardCmd);
+		final MenuBar.MenuItem deleteBoard = menubar.addItem("X",
+				deleteBoardCmd);
 		final MenuBar.MenuItem logoutMenu = menubar.addItem("wyloguj",
 				logoutCommand);
 
@@ -192,6 +194,12 @@ public class TasksView extends VerticalLayout implements View {
 		subWindowForBoard.addComponent(titleBoard);
 		subWindowForBoard.addComponent(createBoardBtn);
 
+		// okienko od zmiany koloru tablicy
+		windowChangeBackgroundBoard = new Window("Wybierz kolor");
+		windowChangeBackgroundBoard.setModal(true);
+		windowChangeBackgroundBoard
+				.setContent(subWindowForChangeBackgroundBoard);
+
 		// okienko do tworzenia nowej organizacji
 		windowCreateOrganization = new Window("Dodawanie organizacji");
 		windowCreateOrganization.setModal(true);
@@ -252,9 +260,8 @@ public class TasksView extends VerticalLayout implements View {
 
 		generateLists(ID_BOARD);
 
-		mainLayout.setStyleName("bordered-grid");
-
 		addLabelMarkedTable();
+		setColorBoard(boardService.getColorBoardById(currentTable.getBoardId()));
 
 		this.setSpacing(true);
 
@@ -269,6 +276,96 @@ public class TasksView extends VerticalLayout implements View {
 		windowCreateBoard.setContent(subWindowForBoard);
 
 		windowCreateOrganization.setContent(subWindowForOrganization);
+
+	}
+
+	@SuppressWarnings("deprecation")
+	private void prepareWindowChangeBackgroundBoard() throws SQLException {
+		subWindowForChangeBackgroundBoard = new VerticalLayout();
+		subWindowForChangeBackgroundBoard.setMargin(true);
+		subWindowForChangeBackgroundBoard.setSpacing(true);
+
+		final OptionGroup group = new OptionGroup("Wybierz kolor");
+		group.addItem("brak");
+		group.addItem("fioletowy");
+		group.addItem("szary");
+		group.addItem("lososiowy");
+		group.addItem("zielony");
+		group.addItem("niebieski");
+		group.addItem("czerwony");
+
+		group.addListener(new Property.ValueChangeListener() {
+
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+
+				try {
+
+					if (group.getValue().equals("brak")) {
+						boardService.editColorBoard(ID_BOARD, "0");
+
+						setStyleName("board");
+					}
+
+					if (group.getValue().equals("fioletowy")) {
+						boardService.editColorBoard(ID_BOARD, "1");
+
+						setStyleName("purple_marked_board");
+					}
+
+					if (group.getValue().equals("szary")) {
+						boardService.editColorBoard(ID_BOARD, "2");
+
+						setStyleName("grey_marked_board");
+					}
+
+					if (group.getValue().equals("lososiowy")) {
+						boardService.editColorBoard(ID_BOARD, "3");
+
+						setStyleName("salmon_pink_marked_board");
+					}
+
+					if (group.getValue().equals("zielony")) {
+						boardService.editColorBoard(ID_BOARD, "4");
+
+						setStyleName("green_marked_board");
+					}
+
+					if (group.getValue().equals("niebieski")) {
+						boardService.editColorBoard(ID_BOARD, "5");
+
+						setStyleName("blue_marked_board");
+					}
+
+					if (group.getValue().equals("czerwony")) {
+						boardService.editColorBoard(ID_BOARD, "6");
+
+						setStyleName("red_marked_board");
+					}
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+
+		Button close = new Button("Zamknij");
+		close.setSizeFull();
+		close.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+
+				windowChangeBackgroundBoard.close();
+
+			}
+		});
+
+		subWindowForChangeBackgroundBoard.addComponent(group);
+		subWindowForChangeBackgroundBoard.addComponent(close);
+		windowChangeBackgroundBoard
+				.setContent(subWindowForChangeBackgroundBoard);
 	}
 
 	private void prepareWindow() throws SQLException {
@@ -276,10 +373,11 @@ public class TasksView extends VerticalLayout implements View {
 		final VerticalLayout vl = new VerticalLayout();
 		ArrayList<Organization> organizations = organizationService
 				.getAllOrganizations();
-		ArrayList<Organization> selectOrganizations = organizationService.getOrganizationByBoard(ID_BOARD);
-		for(Organization o : organizations)
-		{
-			CheckBox checkbox1 = new CheckBox(o.getName(), (selectOrganizations.contains(o)));
+		ArrayList<Organization> selectOrganizations = organizationService
+				.getOrganizationByBoard(ID_BOARD);
+		for (Organization o : organizations) {
+			CheckBox checkbox1 = new CheckBox(o.getName(),
+					(selectOrganizations.contains(o)));
 			checkbox1.setData(o);
 			vl.addComponent(checkbox1);
 		}
@@ -294,28 +392,27 @@ public class TasksView extends VerticalLayout implements View {
 				try {
 					organizationService.deleteOrganizationByBoard(ID_BOARD);
 					organizationService.deleteOrganizationByUser(ID_BOARD);
-					
-					for(Component organizationCheckBox : vl)
-					{
-						if(organizationCheckBox instanceof CheckBox)
-						{
+
+					for (Component organizationCheckBox : vl) {
+						if (organizationCheckBox instanceof CheckBox) {
 							CheckBox temp = (CheckBox) organizationCheckBox;
-							
-							if(temp.getValue())
-							{
-								Organization organization = (Organization) temp.getData();
-								organizationService.addOrganizationByBoard(organization, ID_BOARD);
-								organizationService.addOrganizationByUser(organization, ID_BOARD);
+
+							if (temp.getValue()) {
+								Organization organization = (Organization) temp
+										.getData();
+								organizationService.addOrganizationByBoard(
+										organization, ID_BOARD);
+								organizationService.addOrganizationByUser(
+										organization, ID_BOARD);
 							}
 						}
 					}
-					
+
 					windowAssignOrganization.close();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		});
 
@@ -327,7 +424,6 @@ public class TasksView extends VerticalLayout implements View {
 			public void buttonClick(ClickEvent event) {
 
 				windowAssignOrganization.close();
-
 			}
 		});
 
@@ -356,47 +452,52 @@ public class TasksView extends VerticalLayout implements View {
 		ArrayList<Task> listAllTasks;
 		try {
 			listAllTasks = taskService.getAllTask();
-		
 
-		for (int i = 0; i < allLists.size(); i++) {
+			for (int i = 0; i < allLists.size(); i++) {
 
-			List cList = allLists.get(i);
-			for (int j = 0; j < listAllTasks.size(); j++) {
+				List cList = allLists.get(i);
+				for (int j = 0; j < listAllTasks.size(); j++) {
 
-				if (cList.getId_list().equals(listAllTasks.get(j).getId_list())) {
+					if (cList.getId_list().equals(
+							listAllTasks.get(j).getId_list())) {
 
-					if (listAllTasks.get(j).getMarked().equals("5")) {
-						listAllTasks.get(j).setStyleName("pink_marked_task");
+						if (listAllTasks.get(j).getMarked().equals("5")) {
+							listAllTasks.get(j)
+									.setStyleName("pink_marked_task");
+						}
+
+						if (listAllTasks.get(j).getMarked().equals("4")) {
+							listAllTasks.get(j).setStyleName(
+									"purple_marked_task");
+						}
+
+						if (listAllTasks.get(j).getMarked().equals("3")) {
+							listAllTasks.get(j).setStyleName("red_marked_task");
+						}
+
+						if (listAllTasks.get(j).getMarked().equals("2")) {
+							listAllTasks.get(j).setStyleName(
+									"green_marked_task");
+						}
+
+						if (listAllTasks.get(j).getMarked().equals("1")) {
+							listAllTasks.get(j)
+									.setStyleName("blue_marked_task");
+						}
+						if (listAllTasks.get(j).getMarked().equals("0")) {
+							listAllTasks.get(j).setStyleName("task");
+						}
+						cList.addComponent(listAllTasks.get(j));
 					}
-					
-					if (listAllTasks.get(j).getMarked().equals("4")) {
-						listAllTasks.get(j).setStyleName("purple_marked_task");
-					}
-					
-					if (listAllTasks.get(j).getMarked().equals("3")) {
-						listAllTasks.get(j).setStyleName("red_marked_task");
-					}
-					
-					if (listAllTasks.get(j).getMarked().equals("2")) {
-						listAllTasks.get(j).setStyleName("green_marked_task");
-					}
-					
-					if (listAllTasks.get(j).getMarked().equals("1")) {
-						listAllTasks.get(j).setStyleName("blue_marked_task");
-					}
-					if (listAllTasks.get(j).getMarked().equals("0")) {
-						listAllTasks.get(j).setStyleName("task");
-					}
-					cList.addComponent(listAllTasks.get(j));
+
 				}
+				cList.setDrop(new ListDropHandler(allLists));
+				mainLayout.addComponent(cList);
+				mainLayout.setExpandRatio(cList, 1f);
 
 			}
-			cList.setDrop(new ListDropHandler(allLists));
-			mainLayout.addComponent(cList);
-			mainLayout.setExpandRatio(cList, 1f);
-			
-		}} catch (ParseException e) {
-			// TODO Auto-generated catch block
+		} catch (ParseException e) {
+
 			e.printStackTrace();
 		}
 	}
@@ -405,7 +506,6 @@ public class TasksView extends VerticalLayout implements View {
 	public void enter(ViewChangeEvent event) {
 
 		String username = String.valueOf(getSession().getAttribute("user"));
-
 	}
 
 	public void addLabelMarkedTable() throws SQLException {
@@ -424,7 +524,6 @@ public class TasksView extends VerticalLayout implements View {
 
 	}
 
-
 	public void refreshMenu() throws SQLException {
 		boards = boardService.getAllBoard();
 
@@ -435,7 +534,7 @@ public class TasksView extends VerticalLayout implements View {
 			chooseBoards.addSeparator();
 		}
 	}
-	
+
 	public String getCurrentTableName() {
 		return currentTableName.getValue();
 	}
@@ -443,19 +542,50 @@ public class TasksView extends VerticalLayout implements View {
 	public void setCurrentTableName(String tableName) {
 		Logger.getGlobal().log(Level.SEVERE, tableName);
 		Button edit = new Button();
-		edit.setStyleName(BaseTheme.BUTTON_LINK+" edit-table-btn");
+		edit.setStyleName(BaseTheme.BUTTON_LINK + " edit-table-btn");
 		edit.setIcon(new ThemeResource("icons/edit.png"));
 		edit.addClickListener(new EditBoardButtonHandler(tableName, this));
-		if(currentTableName == null)
-		{
+		if (currentTableName == null) {
 			currentTableName = new Label(tableName);
 			currentTableNameContainer.addComponent(currentTableName);
 			currentTableNameContainer.addComponent(edit);
-		}
-		else{
+		} else {
 			currentTableName.setValue(tableName);
-			currentTableNameContainer.replaceComponent(currentTableNameContainer.getComponent(1), edit);
+			currentTableNameContainer.replaceComponent(
+					currentTableNameContainer.getComponent(1), edit);
 		}
+	}
+
+	private void setColorBoard(String colorBoardById) {
+
+		if (colorBoardById.equals("0")) {
+			setStyleName("board");
+		}
+
+		if (colorBoardById.equals("1")) {
+			setStyleName("purple_marked_board");
+		}
+
+		if (colorBoardById.equals("2")) {
+			setStyleName("grey_marked_board");
+		}
+
+		if (colorBoardById.equals("3")) {
+			setStyleName("salmon_pink_marked_board");
+		}
+
+		if (colorBoardById.equals("4")) {
+			setStyleName("green_marked_board");
+		}
+
+		if (colorBoardById.equals("5")) {
+			setStyleName("blue_marked_board");
+		}
+
+		if (colorBoardById.equals("6")) {
+			setStyleName("red_marked_board");
+		}
+
 	}
 
 	private Command menuCommand = new Command() {
@@ -470,13 +600,50 @@ public class TasksView extends VerticalLayout implements View {
 						generateLists(ID_BOARD);
 						addLabelMarkedTable();
 						setCurrentTableName(board.getName());
+						setColorBoard(boardService.getColorBoardById(ID_BOARD));
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 
 				}
 
+			}
+		}
+	};
+
+	private Command changeBackgroundBoardCmd = new Command() {
+		@Override
+		public void menuSelected(com.vaadin.ui.MenuBar.MenuItem selectedItem) {
+
+			try {
+				prepareWindowChangeBackgroundBoard();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			windowCreateBoard.center();
+			getUI().addWindow(windowChangeBackgroundBoard);
+
+		}
+	};
+
+	private Command deleteBoardCmd = new Command() {
+
+		@Override
+		public void menuSelected(MenuItem selectedItem) {
+
+			try {
+				boardService.setDeleted(ID_BOARD);
+				refreshMenu();
+				currentTable = boards.get(0);
+				ID_BOARD = currentTable.getBoardId();
+				mainLayout.removeAllComponents();
+				generateLists(ID_BOARD);
+				addLabelMarkedTable();
+				setColorBoard(boardService.getColorBoardById(ID_BOARD));
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	};

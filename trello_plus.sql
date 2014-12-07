@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.0.4.1
+-- version 4.1.12
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Czas wygenerowania: 04 Gru 2014, 20:44
--- Wersja serwera: 5.5.32
--- Wersja PHP: 5.4.19
+-- Generation Time: 07 Gru 2014, 15:45
+-- Server version: 5.5.36
+-- PHP Version: 5.4.27
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -17,10 +17,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8 */;
 
 --
--- Baza danych: `trello_plus`
+-- Database: `trello_plus`
 --
-CREATE DATABASE IF NOT EXISTS `trello_plus` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-USE `trello_plus`;
 
 -- --------------------------------------------------------
 
@@ -32,19 +30,21 @@ CREATE TABLE IF NOT EXISTS `boards` (
   `id` int(255) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `marked` int(255) NOT NULL,
+  `color` int(255) NOT NULL,
+  `deleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
   KEY `id_2` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
 
 --
 -- Zrzut danych tabeli `boards`
 --
 
-INSERT INTO `boards` (`id`, `name`, `marked`) VALUES
-(3, 'Tablica A', 0),
-(5, 'Tablica B', 1),
-(6, 'Tablica C', 0);
+INSERT INTO `boards` (`id`, `name`, `marked`, `color`, `deleted`) VALUES
+(3, 'Tablica A', 1, 4, 0),
+(5, 'Tablica B', 0, 3, 0),
+(6, 'Tablica C', 0, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -104,14 +104,14 @@ CREATE TABLE IF NOT EXISTS `lists` (
   `deleted` tinyint(1) NOT NULL,
   PRIMARY KEY (`id_list`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=69 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=70 ;
 
 --
 -- Zrzut danych tabeli `lists`
 --
 
 INSERT INTO `lists` (`id_list`, `id_board`, `name`, `deleted`) VALUES
-(62, 5, 'Lista 1', 1),
+(62, 5, 'Lista 1', 0),
 (63, 5, 'Lista 2', 0),
 (64, 3, 'Lista 3', 0),
 (65, 3, 'Lista 4', 0),
@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
   PRIMARY KEY (`id`),
   KEY `id` (`id`),
   KEY `id_list` (`id_list`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=125 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=126 ;
 
 --
 -- Zrzut danych tabeli `tasks`
@@ -168,12 +168,12 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 
 INSERT INTO `tasks` (`id`, `id_list`, `name`, `description`, `marked`, `lp`, `complexity`, `deadline`, `deleted`) VALUES
 (115, 63, 'zadanie 1', 'opis zadania 1', 0, 1, 3, '2014-12-02 10:30:00', 0),
-(116, 62, 'zadanie 2', 'opis zadania 2', 2, 0, 5, '2014-12-11 10:00:00', 1),
-(117, 62, 'zadanie 3', 'opis zadania 3', 0, 1, 2, '2014-12-02 22:00:00', 1),
-(118, 63, 'zadanie 4', 'opis zadania 4', 4, 0, 1, '2014-12-11 12:00:00', 1),
-(119, 65, 'zadanie 5', 'opis zadania 5', 0, 0, 4, '2015-01-10 11:00:00', 0),
+(116, 62, 'zadanie 2', 'opis zadania 2', 2, 0, 5, '2014-12-11 10:00:00', 0),
+(117, 62, 'zadanie 3', 'opis zadania 3', 0, 1, 2, '2014-12-02 22:00:00', 0),
+(118, 63, 'zadanie 4', 'opis zadania 4', 4, 0, 1, '2014-12-11 12:00:00', 0),
+(119, 65, 'zadanie 5', 'opis zadania 5', 2, 0, 4, '2015-01-10 11:00:00', 0),
 (120, 65, 'zadanie 6 ', 'opis zadania 6', 0, 0, 2, '2014-12-02 22:14:59', 0),
-(121, 64, 'zadanie 7', 'opis zadania 7', 0, 0, 4, '2015-01-10 11:00:00', 0),
+(121, 64, 'zadanie 7', 'opis zadania 7', 1, 0, 4, '2015-01-10 11:00:00', 0),
 (122, 68, 'zadanie 8', 'opis zadania 8', 0, 0, 5, '2014-12-27 19:00:00', 1),
 (123, 63, 'zadanie 9', 'opis zadania 9', 0, 2, 3, '2014-12-04 19:35:07', 1),
 (124, 63, 'zadanie 10', 'opis zadania 10', 0, 3, 3, '2014-12-29 20:00:00', 0);
@@ -221,7 +221,8 @@ INSERT INTO `tasks_users` (`id_task`, `id_user`) VALUES
 (123, 11),
 (115, 14),
 (115, 16),
-(124, 11);
+(124, 11),
+(125, 11);
 
 -- --------------------------------------------------------
 
