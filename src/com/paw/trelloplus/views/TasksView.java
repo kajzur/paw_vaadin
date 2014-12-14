@@ -82,6 +82,8 @@ public class TasksView extends VerticalLayout implements View {
 	Label descriptionMarkedBoard;
 	String valueMarkedBoard;
 
+	boolean deleteAll = false;
+
 	MenuBar menubar = new MenuBar();
 	final MenuBar.MenuItem chooseBoards = menubar.addItem("wybierz tablicê",
 			null);
@@ -99,8 +101,15 @@ public class TasksView extends VerticalLayout implements View {
 		currentTableNameContainer = new HorizontalLayout();
 
 		boards = boardService.getAllBoard();
-		currentTable = boards.get(0);
-		ID_BOARD = currentTable.getBoardId();
+		if (boards.size() > 0) {
+			currentTable = boards.get(0);
+			ID_BOARD = currentTable.getBoardId();
+		} else {
+			Notification.show("Wszystkie tablice usuniete");
+			currentTable = new Board("0", "brak", 0);
+			currentTable.getName();
+			ID_BOARD = currentTable.getBoardId();
+		}
 
 		for (Board board : boards) {
 			chooseBoards.addItem(board.getName(), menuCommand);
@@ -174,6 +183,9 @@ public class TasksView extends VerticalLayout implements View {
 					chooseBoards.addItem(titleBoard.getValue(), menuCommand);
 					chooseBoards.addSeparator();
 					boards = boardService.getAllBoard();
+					currentTable = boards.get(0);
+					ID_BOARD = currentTable.getBoardId();
+					setCurrentTableName(currentTable.getName());
 				} catch (UnsupportedOperationException | SQLException e) {
 					e.printStackTrace();
 				}
@@ -259,9 +271,11 @@ public class TasksView extends VerticalLayout implements View {
 		mainLayout.setSpacing(true);
 
 		generateLists(ID_BOARD);
-
-		addLabelMarkedTable();
-		setColorBoard(boardService.getColorBoardById(currentTable.getBoardId()));
+		if (boards.size() > 0) {
+			addLabelMarkedTable();
+			setColorBoard(boardService.getColorBoardById(currentTable
+					.getBoardId()));
+		}
 
 		this.setSpacing(true);
 
@@ -541,19 +555,33 @@ public class TasksView extends VerticalLayout implements View {
 
 	public void setCurrentTableName(String tableName) {
 		Logger.getGlobal().log(Level.SEVERE, tableName);
-		Button edit = new Button();
-		edit.setStyleName(BaseTheme.BUTTON_LINK + " edit-table-btn");
-		edit.setIcon(new ThemeResource("icons/edit.png"));
-		edit.addClickListener(new EditBoardButtonHandler(tableName, this));
-		if (currentTableName == null) {
-			currentTableName = new Label(tableName);
-			currentTableNameContainer.addComponent(currentTableName);
-			currentTableNameContainer.addComponent(edit);
+		if (boards.size() > 0) {
+			Button edit = new Button();
+			edit.setStyleName(BaseTheme.BUTTON_LINK + " edit-table-btn");
+			edit.setIcon(new ThemeResource("icons/edit.png"));
+			edit.addClickListener(new EditBoardButtonHandler(tableName, this));
+			if (currentTableName == null) {
+				currentTableName = new Label(tableName);
+				currentTableNameContainer.addComponent(currentTableName);
+				currentTableNameContainer.addComponent(edit);
+			} else {
+				if (deleteAll == true) {
+					currentTableNameContainer.removeAllComponents();
+					currentTableName = new Label(tableName);
+					currentTableNameContainer.addComponent(currentTableName);
+					currentTableNameContainer.addComponent(edit);
+					deleteAll = false;
+				}
+
+				currentTableName.setValue(tableName);
+				currentTableNameContainer.replaceComponent(
+						currentTableNameContainer.getComponent(1), edit);
+			}
 		} else {
-			currentTableName.setValue(tableName);
-			currentTableNameContainer.replaceComponent(
-					currentTableNameContainer.getComponent(1), edit);
+			currentTableNameContainer.removeAllComponents();
+			deleteAll = true;
 		}
+
 	}
 
 	private void setColorBoard(String colorBoardById) {
@@ -635,13 +663,28 @@ public class TasksView extends VerticalLayout implements View {
 			try {
 				boardService.setDeleted(ID_BOARD);
 				refreshMenu();
-				currentTable = boards.get(0);
+
+				if (boards.size() > 0) {
+					currentTable = boards.get(0);
+					setCurrentTableName(currentTable.getName());
+				} else {
+					Notification.show("Usunieto wszystkie tablice!!!");
+					setStyleName("board");
+					currentTable = new Board("0", "brak", 0);
+					currentTable.getName();
+					ID_BOARD = currentTable.getBoardId();
+					setCurrentTableName(currentTable.getName());
+				}
+
 				ID_BOARD = currentTable.getBoardId();
 				mainLayout.removeAllComponents();
 				generateLists(ID_BOARD);
-				addLabelMarkedTable();
-				setColorBoard(boardService.getColorBoardById(ID_BOARD));
-				
+
+				if (boards.size() > 0) {
+					addLabelMarkedTable();
+					setColorBoard(boardService.getColorBoardById(ID_BOARD));
+				}
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
